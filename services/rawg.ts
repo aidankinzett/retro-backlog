@@ -1,14 +1,25 @@
-const BASE_URL = 'https://api.rawg.io/api';
+const RAWG_BASE_URL = 'https://api.rawg.io/api';
+const DEFAULT_PROXY_URL = 'https://ghexjephfeibvsfmttoz.supabase.co/functions/v1/rawg-proxy';
+const PROXY_URL = process.env.EXPO_PUBLIC_PROXY_URL || DEFAULT_PROXY_URL;
 
-function getApiKey(): string {
-  const key = process.env.EXPO_PUBLIC_RAWG_API_KEY;
-  if (!key) throw new Error('EXPO_PUBLIC_RAWG_API_KEY is not set in .env');
-  return key;
+function getApiKey(): string | undefined {
+  return process.env.EXPO_PUBLIC_RAWG_API_KEY;
 }
 
 function buildUrl(path: string, params: Record<string, string | number | undefined> = {}): string {
-  const url = new URL(`${BASE_URL}${path}`);
-  url.searchParams.set('key', getApiKey());
+  // If we have a proxy (default or env), use it. Otherwise fallback to direct RAWG.
+  const isUsingProxy = !!PROXY_URL;
+  const base = PROXY_URL || RAWG_BASE_URL;
+  
+  const url = new URL(`${base}${path}`);
+  
+  // Only add key if calling RAWG directly
+  if (!isUsingProxy) {
+    const key = getApiKey();
+    if (!key) throw new Error('EXPO_PUBLIC_RAWG_API_KEY is not set in .env');
+    url.searchParams.set('key', key);
+  }
+
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined) url.searchParams.set(key, String(value));
   }

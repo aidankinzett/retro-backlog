@@ -1,16 +1,11 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { seedGames } from './seed-data';
 
-export const DATABASE_VERSION = 1;
+type Migration = (db: SQLiteDatabase) => Promise<void>;
 
-export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  const result = await db.getFirstAsync<{
-    user_version: number;
-  }>('PRAGMA user_version');
-  const currentVersion = result?.user_version ?? 0;
-
-  if (currentVersion >= DATABASE_VERSION) return;
-
-  if (currentVersion === 0) {
+const migrations: Migration[] = [
+  // Migration 1: version 0 → 1 — Create schema + seed
+  async (db) => {
     await db.execAsync(`
       PRAGMA journal_mode = 'wal';
       PRAGMA foreign_keys = ON;
@@ -54,9 +49,26 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
       CREATE INDEX IF NOT EXISTS idx_games_rawg_slug ON games(rawg_slug);
       CREATE INDEX IF NOT EXISTS idx_screenshots_game ON screenshots(game_id);
     `);
-  }
 
-  await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
+    await seedGames(db);
+  },
+  // Future migrations go here as new array entries
+];
+
+export const DATABASE_VERSION = migrations.length;
+
+export async function migrateDbIfNeeded(db: SQLiteDatabase) {
+  const result = await db.getFirstAsync<{
+    user_version: number;
+  }>('PRAGMA user_version');
+  const currentVersion = result?.user_version ?? 0;
+
+  if (currentVersion >= migrations.length) return;
+
+  for (let i = currentVersion; i < migrations.length; i++) {
+    await migrations[i](db);
+    await db.execAsync(`PRAGMA user_version = ${i + 1}`);
+  }
 }
 
 // --- Game CRUD ---
