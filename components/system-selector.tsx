@@ -19,7 +19,7 @@ export function SystemSelector({ selectedId, onSelect }: SystemSelectorProps) {
             <Pressable
               key={platform.id}
               onPress={() => onSelect(platform.id)}
-              className={`px-4 py-2 rounded-full ${isSelected ? '' : 'bg-background-800'}`}
+              className={`px-4 py-2 rounded-full ${isSelected ? '' : 'bg-background-50'}`}
               style={isSelected ? { backgroundColor: platform.accent } : undefined}
             >
               <Text
