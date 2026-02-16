@@ -30,7 +30,7 @@ export async function enrichGame(db: SQLiteDatabase, game: Game): Promise<void> 
     website: details.website ?? null,
     metacritic_url: details.metacritic_url ?? null,
     rawg_id: details.id,
-    genre: details.genres?.map((g) => g.name).join(', ') ?? null,
+    genre: details.genres?.map((g) => g.name).join(', ') || null,
   });
 
   if (details.id) {

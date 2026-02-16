@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SQLiteDatabase } from 'expo-sqlite';
 import {
+  DATABASE_VERSION,
   migrateDbIfNeeded,
   getGamesByPlatform,
   getBacklogGames,
@@ -23,7 +24,7 @@ describe('migrateDbIfNeeded', () => {
   beforeEach(() => { db = createMockDb(); });
 
   it('skips migration when version is current', async () => {
-    vi.mocked(db.getFirstAsync).mockResolvedValue({ user_version: 1 });
+    vi.mocked(db.getFirstAsync).mockResolvedValue({ user_version: DATABASE_VERSION });
     await migrateDbIfNeeded(db);
     expect(db.execAsync).not.toHaveBeenCalled();
   });
@@ -32,7 +33,7 @@ describe('migrateDbIfNeeded', () => {
     vi.mocked(db.getFirstAsync).mockResolvedValue({ user_version: 0 });
     await migrateDbIfNeeded(db);
     expect(db.execAsync).toHaveBeenCalledTimes(2);
-    expect(db.execAsync).toHaveBeenLastCalledWith('PRAGMA user_version = 1');
+    expect(db.execAsync).toHaveBeenLastCalledWith(`PRAGMA user_version = ${DATABASE_VERSION}`);
   });
 
   it('runs migration when user_version is null', async () => {

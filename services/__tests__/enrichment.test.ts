@@ -180,6 +180,7 @@ describe('enrichGame', () => {
       esrb_rating: null,
       website: null,
       metacritic_url: null,
+      genre: null,
     }));
   });
 });

@@ -1,4 +1,5 @@
 import { vi, beforeEach } from 'vitest';
+import type * as React from 'react';
 
 // ============================================================
 // 1. EXPO MODULES
@@ -139,7 +140,7 @@ vi.mock('react-native-gesture-handler', () => {
     TouchableOpacity,
     ScrollView,
     FlatList,
-    Gesture: { Pan: vi.fn().mockReturnThis, Tap: vi.fn().mockReturnThis },
+    Gesture: { Pan: vi.fn().mockReturnThis(), Tap: vi.fn().mockReturnThis() },
     GestureDetector: View,
     Directions: {},
   };

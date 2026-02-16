@@ -4,17 +4,17 @@ import { searchGames, getTopGames, getGameDetails } from '@/services/rawg';
 vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
 
 function mockFetch(data: any) {
-  global.fetch = vi.fn().mockResolvedValue({
+  vi.spyOn(globalThis, 'fetch').mockResolvedValue({
     ok: true,
     json: vi.fn().mockResolvedValue(data),
-  });
+  } as any);
 }
 
 function mockFetchError(status: number) {
-  global.fetch = vi.fn().mockResolvedValue({
+  vi.spyOn(globalThis, 'fetch').mockResolvedValue({
     ok: false,
     status,
-  });
+  } as any);
 }
 
 const emptyPaginated = { count: 0, next: null, previous: null, results: [] };
@@ -118,14 +118,15 @@ describe('error handling', () => {
   });
 });
 
-describe('getApiKey', () => {
+describe('API key validation', () => {
+  afterEach(() => {
+    vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
+  });
+
   it('throws when API key is not set', async () => {
     vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', '');
     mockFetch(emptyPaginated);
 
     await expect(searchGames('test')).rejects.toThrow('EXPO_PUBLIC_RAWG_API_KEY is not set');
-
-    // Restore for other tests
-    vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
   });
 });

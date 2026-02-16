@@ -56,6 +56,17 @@ describe('useUIStore', () => {
     expect(useUIStore.getState().backlogStatusFilter).toBe('playing');
   });
 
+  it('updates backlog platform filter', () => {
+    useUIStore.getState().setBacklogPlatformFilter('ps2');
+    expect(useUIStore.getState().backlogPlatformFilter).toBe('ps2');
+  });
+
+  it('clears backlog platform filter', () => {
+    useUIStore.getState().setBacklogPlatformFilter('ps2');
+    useUIStore.getState().setBacklogPlatformFilter(null);
+    expect(useUIStore.getState().backlogPlatformFilter).toBeNull();
+  });
+
   it('updates accent override', () => {
     useUIStore.getState().setAccentOverride('#ff0000');
     expect(useUIStore.getState().accentOverride).toBe('#ff0000');
