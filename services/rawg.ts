@@ -1,15 +1,21 @@
 const RAWG_BASE_URL = 'https://api.rawg.io/api';
 const DEFAULT_PROXY_URL = 'https://ghexjephfeibvsfmttoz.supabase.co/functions/v1/rawg-proxy';
-const PROXY_URL = process.env.EXPO_PUBLIC_PROXY_URL || DEFAULT_PROXY_URL;
 
 function getApiKey(): string | undefined {
   return process.env.EXPO_PUBLIC_RAWG_API_KEY;
 }
 
+function getProxyUrl(): string | undefined {
+  const envUrl = process.env.EXPO_PUBLIC_PROXY_URL;
+  if (envUrl === '') return undefined;
+  return envUrl || DEFAULT_PROXY_URL;
+}
+
 function buildUrl(path: string, params: Record<string, string | number | undefined> = {}): string {
   // If we have a proxy (default or env), use it. Otherwise fallback to direct RAWG.
-  const isUsingProxy = !!PROXY_URL;
-  const base = PROXY_URL || RAWG_BASE_URL;
+  const proxyUrl = getProxyUrl();
+  const isUsingProxy = !!proxyUrl;
+  const base = proxyUrl || RAWG_BASE_URL;
   
   const url = new URL(`${base}${path}`);
   

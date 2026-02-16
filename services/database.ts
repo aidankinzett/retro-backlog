@@ -55,6 +55,8 @@ const migrations: Migration[] = [
   // Future migrations go here as new array entries
 ];
 
+export const DATABASE_VERSION = migrations.length;
+
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const result = await db.getFirstAsync<{
     user_version: number;

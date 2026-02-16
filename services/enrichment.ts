@@ -13,7 +13,7 @@ import { PLATFORM_MAP } from '@/constants/platforms';
  * Call this after inserting a game from Browse.
  */
 export async function enrichGame(db: SQLiteDatabase, game: Game): Promise<void> {
-  let slug = game.rawg_slug || String(game.rawg_id);
+  const slug = game.rawg_slug || (game.rawg_id ? String(game.rawg_id) : null);
   if (!slug) return;
 
   let details: RawgGame;
@@ -56,7 +56,7 @@ export async function enrichGame(db: SQLiteDatabase, game: Game): Promise<void> 
     website: details.website ?? null,
     metacritic_url: details.metacritic_url ?? null,
     rawg_id: details.id,
-    genre: details.genres?.map((g) => g.name).join(', ') ?? null,
+    genre: details.genres?.map((g) => g.name).join(', ') || null,
   });
 
   if (details.id) {
