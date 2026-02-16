@@ -9,7 +9,7 @@ import { Pressable } from '@/components/ui/pressable';
 import { Colors } from '@/constants/theme';
 import { PLATFORMS } from '@/constants/platforms';
 import { useUIStore } from '@/stores/ui';
-import { useSettingsCounts, useClearCache } from '@/hooks/use-db-queries';
+import { useSettingsCounts, useClearCache, useSeedDatabase } from '@/hooks/use-db-queries';
 
 export default function SettingsScreen() {
   const accentOverride = useUIStore((s) => s.accentOverride);
@@ -17,6 +17,7 @@ export default function SettingsScreen() {
 
   const { data: counts = { gameCount: 0, screenshotCount: 0 } } = useSettingsCounts();
   const clearCache = useClearCache();
+  const seedDb = useSeedDatabase();
 
   const accentOptions = [
     { label: 'Dynamic (per system)', color: null },
@@ -72,13 +73,27 @@ export default function SettingsScreen() {
             <Heading size="lg" className="text-typography-white">Storage</Heading>
             <Text className="text-typography-gray text-sm">Games in database: {counts.gameCount}</Text>
             <Text className="text-typography-gray text-sm">Cached screenshots: {counts.screenshotCount}</Text>
-            <Pressable
-              onPress={() => clearCache.mutate()}
-              className="mt-2 px-4 py-2 rounded self-start"
-              style={{ backgroundColor: '#b91c1c' }}
-            >
-              <Text className="text-typography-white text-sm font-bold">Clear Cache &amp; Re-enrich</Text>
-            </Pressable>
+            
+            <HStack className="gap-2 mt-2">
+              <Pressable
+                onPress={() => clearCache.mutate()}
+                className="px-4 py-2 rounded"
+                style={{ backgroundColor: '#b91c1c' }}
+              >
+                <Text className="text-typography-white text-sm font-bold">Clear Cache</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => seedDb.mutate()}
+                disabled={seedDb.isPending}
+                className="px-4 py-2 rounded"
+                style={{ backgroundColor: Colors.tint, opacity: seedDb.isPending ? 0.5 : 1 }}
+              >
+                <Text className="text-typography-white text-sm font-bold">
+                  {seedDb.isPending ? 'Seeding...' : 'Seed Database'}
+                </Text>
+              </Pressable>
+            </HStack>
           </VStack>
 
           {/* App Info */}

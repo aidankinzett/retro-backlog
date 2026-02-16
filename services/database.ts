@@ -113,12 +113,12 @@ export async function getGamesByPlatform(
 ): Promise<Game[]> {
   if (vibeFilter) {
     return db.getAllAsync<Game>(
-      'SELECT * FROM games WHERE platform = ? AND curated_vibe = ? ORDER BY metacritic DESC',
+      'SELECT * FROM games WHERE platform = ? AND curated_vibe = ? ORDER BY metacritic DESC, title ASC',
       [platform, vibeFilter]
     );
   }
   return db.getAllAsync<Game>(
-    'SELECT * FROM games WHERE platform = ? ORDER BY metacritic DESC',
+    'SELECT * FROM games WHERE platform = ? ORDER BY metacritic DESC, title ASC',
     [platform]
   );
 }

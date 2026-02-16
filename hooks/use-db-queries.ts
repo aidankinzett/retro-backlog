@@ -186,3 +186,19 @@ export function useClearCache() {
     },
   });
 }
+
+export function useSeedDatabase() {
+  const db = useSQLiteContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const { seedGames } = await import('@/services/seed-data');
+      await seedGames(db);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings', 'counts'] });
+      queryClient.invalidateQueries({ queryKey: ['games'] });
+    },
+  });
+}
