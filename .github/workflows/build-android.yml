@@ -1,12 +1,16 @@
-name: Build Android APK
+name: Build & Deploy Android
 
 on:
   push:
     branches:
       - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,12 +27,6 @@ jobs:
           node-version: 20
           cache: pnpm
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
@@ -38,13 +36,49 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Generate native fingerprint
+        id: fingerprint
+        run: |
+          HASH=$(node -e "
+            const { createFingerprintAsync } = require('@expo/fingerprint');
+            createFingerprintAsync('.', { platforms: ['android'] })
+              .then(fp => console.log(fp.hash));
+          ")
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+          echo "Fingerprint: $HASH"
+
+      - name: Check fingerprint cache
+        id: fingerprint-cache
+        uses: actions/cache@v4
+        with:
+          path: .fingerprint-cache
+          key: fingerprint-android-${{ steps.fingerprint.outputs.hash }}
+
+      - name: Create cache marker
+        if: steps.fingerprint-cache.outputs.cache-hit != 'true'
+        run: mkdir -p .fingerprint-cache && echo "${{ steps.fingerprint.outputs.hash }}" > .fingerprint-cache/hash
+
+      # Always push an OTA update
+      - name: Push OTA update
+        run: eas update --branch preview --message "Update #${{ github.run_number }}" --non-interactive
+
+      # Full native build only when fingerprint changes
+      - name: Setup Java
+        if: steps.fingerprint-cache.outputs.cache-hit != 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
       - name: Cache Expo prebuild
+        if: steps.fingerprint-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: android
           key: prebuild-android-${{ hashFiles('app.json', 'package.json', 'pnpm-lock.yaml') }}
 
       - name: Cache Gradle
+        if: steps.fingerprint-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -54,9 +88,11 @@ jobs:
           restore-keys: gradle-
 
       - name: Build APK
+        if: steps.fingerprint-cache.outputs.cache-hit != 'true'
         run: eas build --local --platform android --profile preview --output ./app.apk --non-interactive
 
       - name: Create GitHub Release
+        if: steps.fingerprint-cache.outputs.cache-hit != 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
