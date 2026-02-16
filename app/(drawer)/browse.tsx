@@ -92,7 +92,7 @@ export default function BrowseScreen() {
         website: rawgGame.website ?? null,
         metacritic_url: rawgGame.metacritic_url ?? null,
         backlog_status: 'want_to_play',
-        last_enriched: new Date().toISOString(),
+        last_enriched: null,
       });
     }
   };
