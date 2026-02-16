@@ -1,4 +1,5 @@
 import { createContext, useContext, type ReactNode } from 'react';
+import { View } from 'react-native';
 import useGamepad from 'react-native-earl-gamepad/dist/useGamepad';
 import type { ButtonEvent, GamepadButtonName } from 'react-native-earl-gamepad/dist/types';
 import { useRouter } from 'expo-router';
@@ -57,7 +58,9 @@ export function GamepadProvider({ children }: { children: ReactNode }) {
 
   return (
     <GamepadContext.Provider value={{ pressedButtons, isPressed }}>
-      {bridge}
+      <View style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+        {bridge}
+      </View>
       {children}
     </GamepadContext.Provider>
   );
