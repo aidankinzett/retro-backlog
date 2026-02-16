@@ -79,7 +79,7 @@ export default function BacklogScreen() {
         <HStack className="items-center justify-between">
           <Pressable onPress={() => cycleStatus(item)}>
             <Text style={{ color: Colors.tint }} className="text-xs font-bold">
-              {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)?.label ?? 'Unknown'}
+              {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)?.shortLabel ?? 'Unknown'}
             </Text>
           </Pressable>
           <MetacriticBadge score={item.metacritic} />

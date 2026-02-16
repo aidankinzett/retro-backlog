@@ -3,11 +3,11 @@ import type { RawgGame } from '@/services/rawg';
 
 export type BacklogStatus = 'none' | 'want_to_play' | 'playing' | 'completed' | 'dropped';
 
-export const BACKLOG_STATUSES: { value: BacklogStatus; label: string }[] = [
-  { value: 'want_to_play', label: 'Want to Play' },
-  { value: 'playing', label: 'Playing' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'dropped', label: 'Dropped' },
+export const BACKLOG_STATUSES: { value: BacklogStatus; label: string; shortLabel: string }[] = [
+  { value: 'want_to_play', label: 'Want to Play', shortLabel: 'Wishlist' },
+  { value: 'playing', label: 'Playing', shortLabel: 'Playing' },
+  { value: 'completed', label: 'Completed', shortLabel: 'Done' },
+  { value: 'dropped', label: 'Dropped', shortLabel: 'Dropped' },
 ];
 
 interface UIState {
