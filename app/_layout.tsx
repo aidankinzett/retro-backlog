@@ -7,7 +7,13 @@ import 'react-native-reanimated';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import { GamepadProvider } from '@/providers/gamepad-provider';
 import { migrateDbIfNeeded } from '@/services/database';
+import { useEnrichment } from '@/hooks/use-enrichment';
 import '@/global.css';
+
+function EnrichmentRunner() {
+  useEnrichment();
+  return null;
+}
 
 export default function RootLayout() {
   return (
@@ -15,6 +21,7 @@ export default function RootLayout() {
       <ThemeProvider value={DarkTheme}>
         <SQLiteProvider databaseName="retro-backlog.db" onInit={migrateDbIfNeeded}>
           <GamepadProvider>
+            <EnrichmentRunner />
             <Stack>
               <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
               <Stack.Screen
