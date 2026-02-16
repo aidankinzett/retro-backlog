@@ -58,8 +58,9 @@ jobs:
         if: steps.fingerprint-cache.outputs.cache-hit != 'true'
         run: mkdir -p .fingerprint-cache && echo "${{ steps.fingerprint.outputs.hash }}" > .fingerprint-cache/hash
 
-      # Always push an OTA update
+      # OTA update only when native code hasn't changed (JS-only changes)
       - name: Push OTA update
+        if: steps.fingerprint-cache.outputs.cache-hit == 'true'
         run: |
           eas update --branch preview --message "Update #${{ github.run_number }}"
 
