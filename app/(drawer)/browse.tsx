@@ -13,7 +13,8 @@ import { Colors } from '@/constants/theme';
 import { PLATFORMS } from '@/constants/platforms';
 import { useUIStore } from '@/stores/ui';
 import { searchGames, getTopGames, type RawgGame } from '@/services/rawg';
-import { insertGame, getGameByRawgSlug, updateBacklogStatus } from '@/services/database';
+import { insertGame, getGameByRawgSlug, getGameById, updateBacklogStatus } from '@/services/database';
+import { enrichGame } from '@/services/enrichment';
 import { randomUUID } from 'expo-crypto';
 
 export default function BrowseScreen() {
@@ -64,15 +65,18 @@ export default function BrowseScreen() {
   }, [doSearch]);
 
   const handleAddToBacklog = async (rawgGame: RawgGame) => {
+    let gameId: string;
     const existing = await getGameByRawgSlug(db, rawgGame.slug);
     if (existing) {
       await updateBacklogStatus(db, existing.id, 'want_to_play');
+      gameId = existing.id;
     } else {
+      gameId = randomUUID();
       const platformEntry = PLATFORMS.find((p) =>
         rawgGame.platforms?.some((rp) => rp.platform.id === p.rawgId)
       );
       await insertGame(db, {
-        id: randomUUID(),
+        id: gameId,
         rawg_id: rawgGame.id,
         rawg_slug: rawgGame.slug,
         title: rawgGame.name,
@@ -84,16 +88,24 @@ export default function BrowseScreen() {
         rawg_rating: rawgGame.rating,
         release_date: rawgGame.released,
         background_image: rawgGame.background_image,
-        developer: rawgGame.developers?.[0]?.name ?? null,
-        publisher: rawgGame.publishers?.[0]?.name ?? null,
-        description: rawgGame.description_raw ?? null,
+        developer: null,
+        publisher: null,
+        description: null,
         playtime: rawgGame.playtime,
-        esrb_rating: rawgGame.esrb_rating?.name ?? null,
-        website: rawgGame.website ?? null,
-        metacritic_url: rawgGame.metacritic_url ?? null,
+        esrb_rating: null,
+        website: null,
+        metacritic_url: null,
         backlog_status: 'want_to_play',
         last_enriched: null,
       });
+    }
+
+    // Enrich in background — don't await so the UI stays responsive
+    const game = await getGameById(db, gameId);
+    if (game && !game.last_enriched) {
+      enrichGame(db, game).catch((err) =>
+        console.error(`Enrichment failed for ${game.title}:`, err)
+      );
     }
   };
 
