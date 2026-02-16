@@ -27,7 +27,7 @@ export default function BrowseScreen() {
 
   // Debounce search input
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const handleSearchChange = useCallback(
     (text: string) => {
       setSearchQuery(text);
