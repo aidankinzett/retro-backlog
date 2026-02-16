@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@expo/fingerprint':
+        specifier: ^0.15.4
+        version: 0.15.4
       '@expo/html-elements':
         specifier: ^0.10.1
         version: 0.10.1
