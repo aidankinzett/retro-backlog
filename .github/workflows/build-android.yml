@@ -61,7 +61,7 @@ jobs:
       # Always push an OTA update
       - name: Push OTA update
         run: |
-          eas update --branch preview --message "Update #${{ github.run_number }}" --non-interactive
+          eas update --branch preview --message "Update #${{ github.run_number }}"
 
       # Full native build only when fingerprint changes
       - name: Setup Java
@@ -90,7 +90,7 @@ jobs:
 
       - name: Build APK
         if: steps.fingerprint-cache.outputs.cache-hit != 'true'
-        run: eas build --local --platform android --profile preview --output ./app.apk --non-interactive
+        run: eas build --local --platform android --profile preview --output ./app.apk
 
       - name: Create GitHub Release
         if: steps.fingerprint-cache.outputs.cache-hit != 'true'
