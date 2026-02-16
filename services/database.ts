@@ -1,5 +1,4 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
-import { seedGames } from './seed-data';
 
 type Migration = (db: SQLiteDatabase) => Promise<void>;
 
@@ -50,7 +49,6 @@ const migrations: Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_screenshots_game ON screenshots(game_id);
     `);
 
-    await seedGames(db);
   },
   // Future migrations go here as new array entries
 ];
@@ -58,17 +56,25 @@ const migrations: Migration[] = [
 export const DATABASE_VERSION = migrations.length;
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
+  console.log('[DB] migrateDbIfNeeded called');
   const result = await db.getFirstAsync<{
     user_version: number;
   }>('PRAGMA user_version');
   const currentVersion = result?.user_version ?? 0;
 
-  if (currentVersion >= migrations.length) return;
+  if (currentVersion >= migrations.length) {
+    console.log(`[DB] Already at version ${currentVersion}, no migration needed`);
+    return;
+  }
 
+  console.log(`[DB] Migrating from version ${currentVersion} to ${migrations.length}...`);
   for (let i = currentVersion; i < migrations.length; i++) {
+    console.log(`[DB] Running migration ${i + 1}...`);
     await migrations[i](db);
     await db.execAsync(`PRAGMA user_version = ${i + 1}`);
+    console.log(`[DB] Migration ${i + 1} complete`);
   }
+  console.log('[DB] All migrations done');
 }
 
 // --- Game CRUD ---

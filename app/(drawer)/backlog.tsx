@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -7,6 +8,7 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Pressable } from '@/components/ui/pressable';
 import { MetacriticBadge } from '@/components/metacritic-badge';
+import { BacklogStatusSheet } from '@/components/backlog-status-sheet';
 import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 import { type Game } from '@/services/database';
@@ -28,13 +30,7 @@ export default function BacklogScreen() {
   const { data: games = [] } = useBacklogGames(statusFilter ?? undefined);
   const { data: stats = { total: 0, want_to_play: 0, playing: 0, completed: 0, dropped: 0 } } = useBacklogStats();
   const updateStatus = useUpdateBacklogStatus();
-
-  const cycleStatus = (game: Game) => {
-    const order: BacklogStatus[] = ['want_to_play', 'playing', 'completed', 'dropped', 'none'];
-    const currentIndex = order.indexOf(game.backlog_status as BacklogStatus);
-    const nextStatus = order[(currentIndex + 1) % order.length];
-    updateStatus.mutate({ gameId: game.id, slug: game.rawg_slug, status: nextStatus });
-  };
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
   const renderItem = ({ item }: { item: Game }) => (
     <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
@@ -54,7 +50,7 @@ export default function BacklogScreen() {
             {item.title}
           </Text>
           <HStack className="items-center justify-between">
-            <Pressable onPress={() => cycleStatus(item)}>
+            <Pressable onPress={() => setSelectedGame(item)}>
               <Text style={{ color: Colors.tint }} className="text-xs font-bold">
                 {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)?.shortLabel ?? 'Unknown'}
               </Text>
@@ -125,6 +121,17 @@ export default function BacklogScreen() {
             </Text>
           </Box>
         }
+      />
+      <BacklogStatusSheet
+        isOpen={!!selectedGame}
+        onClose={() => setSelectedGame(null)}
+        currentStatus={(selectedGame?.backlog_status as BacklogStatus) ?? 'none'}
+        onStatusChange={(status) => {
+          if (selectedGame) {
+            updateStatus.mutate({ gameId: selectedGame.id, slug: selectedGame.rawg_slug, status });
+          }
+          setSelectedGame(null);
+        }}
       />
     </Box>
   );

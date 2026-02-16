@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -9,6 +10,7 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Pressable } from '@/components/ui/pressable';
 import { MetacriticBadge } from '@/components/metacritic-badge';
+import { BacklogStatusSheet } from '@/components/backlog-status-sheet';
 import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 import { PLATFORM_MAP, PLATFORMS } from '@/constants/platforms';
@@ -21,6 +23,7 @@ export default function GameDetailScreen() {
   const { isLandscape } = useOrientation();
   const insets = useSafeAreaInsets();
 
+  const [showStatusSheet, setShowStatusSheet] = useState(false);
   const { data, isPending, isError } = useGameDetail(slug);
   const updateStatus = useUpdateBacklogStatus();
   const addToBacklog = useAddToBacklog();
@@ -54,12 +57,11 @@ export default function GameDetailScreen() {
   // Screenshots from DB (only available for games in the database)
   const { data: screenshots = [] } = useGameScreenshots(game?.id);
 
-  const handleStatusChange = async (status: BacklogStatus) => {
-    const newStatus = backlogStatus === status ? 'none' : status;
+  const handleStatusChange = (status: BacklogStatus) => {
     if (game) {
-      updateStatus.mutate({ gameId: game.id, slug: game.rawg_slug, status: newStatus });
+      updateStatus.mutate({ gameId: game.id, slug: game.rawg_slug, status });
     } else if (rawgGame) {
-      addToBacklog.mutate({ rawgGame, status: newStatus === 'none' ? 'want_to_play' : newStatus });
+      addToBacklog.mutate({ rawgGame, status: status === 'none' ? 'want_to_play' : status });
     }
   };
 
@@ -142,25 +144,18 @@ export default function GameDetailScreen() {
       {/* Backlog status */}
       <VStack className="gap-2 mt-2">
         <Text className="text-typography-gray text-sm font-bold">Backlog Status</Text>
-        <HStack className="flex-wrap gap-2">
-          {BACKLOG_STATUSES.map((s) => {
-            const isActive = backlogStatus === s.value;
-            return (
-              <Pressable
-                key={s.value}
-                onPress={() => handleStatusChange(s.value)}
-                className={`px-3 py-1.5 rounded-full ${isActive ? '' : 'bg-background-50'}`}
-                style={isActive ? { backgroundColor: Colors.tint } : undefined}
-              >
-                <Text
-                  className={`text-xs font-bold ${isActive ? 'text-typography-white' : 'text-typography-gray'}`}
-                >
-                  {s.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </HStack>
+        <Pressable
+          onPress={() => setShowStatusSheet(true)}
+          className="self-start px-4 py-2 rounded-lg bg-background-50 flex-row items-center gap-2"
+        >
+          <Text
+            style={backlogStatus !== 'none' ? { color: Colors.tint } : undefined}
+            className="text-sm font-bold text-typography-gray"
+          >
+            {BACKLOG_STATUSES.find((s) => s.value === backlogStatus)?.label ?? 'Add to Backlog'}
+          </Text>
+          <Text className="text-typography-gray text-xs">▼</Text>
+        </Pressable>
       </VStack>
     </VStack>
   );
@@ -235,6 +230,16 @@ export default function GameDetailScreen() {
           </VStack>
         )}
       </ScrollView>
+      <BacklogStatusSheet
+        isOpen={showStatusSheet}
+        onClose={() => setShowStatusSheet(false)}
+        currentStatus={backlogStatus as BacklogStatus}
+        onStatusChange={(status) => {
+          handleStatusChange(status);
+          setShowStatusSheet(false);
+        }}
+        showRemove={!!game}
+      />
     </Box>
   );
 }
