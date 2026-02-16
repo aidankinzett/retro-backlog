@@ -1,4 +1,4 @@
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { GameCard } from '@/components/game-card';
 import { useOrientation } from '@/hooks/use-orientation';
@@ -21,10 +21,12 @@ export function GameGrid({ games }: GameGridProps) {
       contentContainerStyle={{ padding: 12, gap: 12 }}
       columnWrapperStyle={columns > 1 ? { gap: 12 } : undefined}
       renderItem={({ item }) => (
-        <GameCard
-          game={item}
-          onPress={() => router.push(`/game/${item.id}`)}
-        />
+        <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
+          <GameCard
+            game={item}
+            onPress={() => router.push(`/game/${item.id}`)}
+          />
+        </View>
       )}
       style={{ flex: 1 }}
     />

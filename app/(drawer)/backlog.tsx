@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useFocusEffect } from '@react-navigation/native';
@@ -60,9 +60,10 @@ export default function BacklogScreen() {
   };
 
   const renderItem = ({ item }: { item: Game }) => (
+    <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
     <Pressable
       onPress={() => router.push(`/game/${item.id}`)}
-      className="rounded-lg overflow-hidden flex-1"
+      className="rounded-lg overflow-hidden"
       style={{ backgroundColor: Colors.surface }}
     >
       <Image
@@ -85,6 +86,7 @@ export default function BacklogScreen() {
         </HStack>
       </Box>
     </Pressable>
+    </View>
   );
 
   return (

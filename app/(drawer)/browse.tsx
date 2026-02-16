@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { TextInput, FlatList, ActivityIndicator } from 'react-native';
+import { TextInput, FlatList, ActivityIndicator, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -98,11 +98,12 @@ export default function BrowseScreen() {
   };
 
   const renderItem = ({ item }: { item: RawgGame }) => (
+    <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
     <Pressable
       onPress={() => {
         router.push(`/game/${item.slug}`);
       }}
-      className="rounded-lg overflow-hidden flex-1"
+      className="rounded-lg overflow-hidden"
       style={{ backgroundColor: Colors.surface }}
     >
       <Image
@@ -130,6 +131,7 @@ export default function BrowseScreen() {
         </Pressable>
       </Box>
     </Pressable>
+    </View>
   );
 
   return (
