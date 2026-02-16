@@ -2,10 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Stub environment BEFORE importing the module that uses it at top-level
 vi.stubEnv('EXPO_PUBLIC_PROXY_URL', '');
+vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
 
 import { searchGames, getTopGames, getGameDetails } from '@/services/rawg';
-
-vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
 
 function mockFetch(data: any) {
   vi.spyOn(globalThis, 'fetch').mockResolvedValue({
@@ -125,6 +124,11 @@ describe('error handling', () => {
 });
 
 describe('API key validation', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.stubEnv('EXPO_PUBLIC_PROXY_URL', '');
+  });
+
   afterEach(() => {
     vi.unstubAllEnvs();
     // Re-enable for other tests if needed, though they are in different suites
