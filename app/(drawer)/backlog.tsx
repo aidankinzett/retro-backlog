@@ -20,8 +20,8 @@ import {
 } from '@/services/database';
 import { useUIStore, BACKLOG_STATUSES, type BacklogStatus } from '@/stores/ui';
 
-const ALL_FILTERS: { value: BacklogStatus | null; label: string }[] = [
-  { value: null, label: 'All' },
+const ALL_FILTERS: { value: BacklogStatus | null; label: string; shortLabel: string }[] = [
+  { value: null, label: 'All', shortLabel: 'All' },
   ...BACKLOG_STATUSES,
 ];
 
@@ -125,7 +125,7 @@ export default function BacklogScreen() {
               <Text
                 className={`text-xs font-bold ${isActive ? 'text-typography-white' : 'text-typography-gray'}`}
               >
-                {f.label}
+                {f.shortLabel}
               </Text>
             </Pressable>
           );
