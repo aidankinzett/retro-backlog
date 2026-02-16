@@ -34,6 +34,16 @@ function buildUrl(path: string, params: Record<string, string | number | undefin
 
 // --- Types ---
 
+export class RawgError extends Error {
+  status?: number;
+
+  constructor(message: string, status?: number) {
+    super(message);
+    this.name = 'RawgError';
+    this.status = status;
+  }
+}
+
 export interface RawgGame {
   id: number;
   slug: string;
@@ -97,7 +107,7 @@ export async function searchGames(
   });
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`RAWG API error: ${res.status}`);
+  if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);
   return res.json();
 }
 
@@ -119,14 +129,14 @@ export async function getTopGames(
   });
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`RAWG API error: ${res.status}`);
+  if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);
   return res.json();
 }
 
 export async function getGameDetails(idOrSlug: number | string): Promise<RawgGame> {
   const url = buildUrl(`/games/${idOrSlug}`);
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`RAWG API error: ${res.status}`);
+  if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);
   return res.json();
 }
 
@@ -135,13 +145,13 @@ export async function getGameScreenshots(
 ): Promise<RawgPaginatedResponse<RawgScreenshot>> {
   const url = buildUrl(`/games/${gameId}/screenshots`);
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`RAWG API error: ${res.status}`);
+  if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);
   return res.json();
 }
 
 export async function getPlatforms(): Promise<RawgPaginatedResponse<RawgPlatform>> {
   const url = buildUrl('/platforms', { page_size: 50 });
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`RAWG API error: ${res.status}`);
+  if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);
   return res.json();
 }

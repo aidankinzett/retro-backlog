@@ -35,14 +35,31 @@ serve(async (req) => {
     console.log(`Proxying request to: ${rawgUrl.toString().replace(RAWG_API_KEY, "REDACTED")}`)
 
     const response = await fetch(rawgUrl.toString())
-    const data = await response.json()
+    
+    // Safely parse JSON or handle non-JSON responses
+    let data;
+    const contentType = response.headers.get("content-type")
+    if (contentType && contentType.includes("application/json")) {
+      try {
+        data = await response.json()
+      } catch (e) {
+        console.error("Error parsing RAWG JSON:", e)
+        data = { error: "Failed to parse RAWG response" }
+      }
+    } else {
+      const text = await response.text()
+      console.warn(`Non-JSON response from RAWG (${response.status}):`, text.slice(0, 200))
+      data = { error: "RAWG returned a non-JSON response", status: response.status }
+    }
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: response.status,
     })
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("Proxy error:", err)
+    const message = err instanceof Error ? err.message : "Internal server error"
+    return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     })

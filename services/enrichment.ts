@@ -5,8 +5,21 @@ import {
   deleteScreenshotsByGame,
   type Game,
 } from '@/services/database';
-import { getGameDetails, getGameScreenshots, searchGames, type RawgGame } from '@/services/rawg';
+import {
+  getGameDetails,
+  getGameScreenshots,
+  searchGames,
+  type RawgGame,
+  RawgError,
+} from '@/services/rawg';
 import { PLATFORM_MAP } from '@/constants/platforms';
+
+function normalizeTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .trim();
+}
 
 /**
  * Enrich a single game with full RAWG details and screenshots.
@@ -19,24 +32,32 @@ export async function enrichGame(db: SQLiteDatabase, game: Game): Promise<void> 
   let details: RawgGame;
   try {
     details = await getGameDetails(slug);
-  } catch (err: any) {
+  } catch (err) {
     // If slug lookup fails with 404, try searching by title as fallback
-    if (err.message.includes('404') && game.title) {
+    if (err instanceof RawgError && err.status === 404 && game.title) {
       const platformRawgId = PLATFORM_MAP[game.platform]?.rawgId;
       const searchRes = await searchGames(game.title, {
         platforms: platformRawgId,
-        page_size: 1,
+        page_size: 5, // Get a few to find a better match
       });
 
-      if (searchRes.results.length > 0) {
-        details = searchRes.results[0];
+      const normalizedTarget = normalizeTitle(game.title);
+      const bestMatch = searchRes.results.find((result) => {
+        const normalizedResult = normalizeTitle(result.name);
+        return normalizedResult.includes(normalizedTarget) || normalizedTarget.includes(normalizedResult);
+      });
+
+      if (bestMatch) {
+        details = bestMatch;
         // Update the stored slug and rawg_id to fix future lookups
-        await db.runAsync(
-          'UPDATE games SET rawg_slug = ?, rawg_id = ? WHERE id = ?',
-          [details.slug, details.id, game.id]
-        );
+        await db.runAsync('UPDATE games SET rawg_slug = ?, rawg_id = ? WHERE id = ?', [
+          details.slug,
+          details.id,
+          game.id,
+        ]);
       } else {
-        throw err; // Re-throw if search also finds nothing
+        console.warn(`Enrichment: No confident match found for "${game.title}"`);
+        return; // Skip update if no match found
       }
     } else {
       throw err;
