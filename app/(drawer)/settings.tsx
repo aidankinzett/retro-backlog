@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
 import { Linking, ScrollView } from 'react-native';
-import { useSQLiteContext } from 'expo-sqlite';
 import Constants from 'expo-constants';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
@@ -11,28 +9,14 @@ import { Pressable } from '@/components/ui/pressable';
 import { Colors } from '@/constants/theme';
 import { PLATFORMS } from '@/constants/platforms';
 import { useUIStore } from '@/stores/ui';
+import { useSettingsCounts, useClearCache } from '@/hooks/use-db-queries';
 
 export default function SettingsScreen() {
-  const db = useSQLiteContext();
   const accentOverride = useUIStore((s) => s.accentOverride);
   const setAccentOverride = useUIStore((s) => s.setAccentOverride);
-  const [gameCount, setGameCount] = useState(0);
-  const [screenshotCount, setScreenshotCount] = useState(0);
 
-  useEffect(() => {
-    db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM games').then(
-      (r) => r && setGameCount(r.count)
-    );
-    db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM screenshots').then(
-      (r) => r && setScreenshotCount(r.count)
-    );
-  }, [db]);
-
-  const handleClearCache = async () => {
-    await db.execAsync("UPDATE games SET last_enriched = NULL");
-    await db.execAsync("DELETE FROM screenshots");
-    setScreenshotCount(0);
-  };
+  const { data: counts = { gameCount: 0, screenshotCount: 0 } } = useSettingsCounts();
+  const clearCache = useClearCache();
 
   const accentOptions = [
     { label: 'Dynamic (per system)', color: null },
@@ -86,10 +70,10 @@ export default function SettingsScreen() {
           {/* Storage Stats */}
           <VStack className="gap-2">
             <Heading size="lg" className="text-typography-white">Storage</Heading>
-            <Text className="text-typography-gray text-sm">Games in database: {gameCount}</Text>
-            <Text className="text-typography-gray text-sm">Cached screenshots: {screenshotCount}</Text>
+            <Text className="text-typography-gray text-sm">Games in database: {counts.gameCount}</Text>
+            <Text className="text-typography-gray text-sm">Cached screenshots: {counts.screenshotCount}</Text>
             <Pressable
-              onPress={handleClearCache}
+              onPress={() => clearCache.mutate()}
               className="mt-2 px-4 py-2 rounded self-start"
               style={{ backgroundColor: '#b91c1c' }}
             >

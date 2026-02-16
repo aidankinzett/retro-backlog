@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { TextInput, FlatList, ActivityIndicator, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { useSQLiteContext } from 'expo-sqlite';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
@@ -12,13 +11,11 @@ import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 import { PLATFORMS } from '@/constants/platforms';
 import { useUIStore } from '@/stores/ui';
-import { searchGames, getTopGames, type RawgGame } from '@/services/rawg';
-import { insertGame, getGameByRawgSlug, getGameById, updateBacklogStatus } from '@/services/database';
-import { enrichGame } from '@/services/enrichment';
-import { randomUUID } from 'expo-crypto';
+import { useRawgSearch, useRawgTopGames } from '@/hooks/use-rawg-queries';
+import { useAddToBacklog } from '@/hooks/use-db-queries';
+import type { RawgGame } from '@/services/rawg';
 
 export default function BrowseScreen() {
-  const db = useSQLiteContext();
   const router = useRouter();
   const { columns } = useOrientation();
 
@@ -28,121 +25,70 @@ export default function BrowseScreen() {
   const setBrowsePlatformFilter = useUIStore((s) => s.setBrowsePlatformFilter);
   const browseOrdering = useUIStore((s) => s.browseOrdering);
 
-  const [results, setResults] = useState<RawgGame[]>([]);
-  const [loading, setLoading] = useState(false);
+  // Debounce search input
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
-
-  const doSearch = useCallback(async () => {
-    setLoading(true);
-    try {
-      if (searchQuery.trim()) {
-        const res = await searchGames(searchQuery, {
-          platforms: browsePlatformFilter ?? undefined,
-          ordering: browseOrdering,
-        });
-        setResults(res.results);
-      } else if (browsePlatformFilter) {
-        const res = await getTopGames(browsePlatformFilter, {
-          ordering: browseOrdering,
-        });
-        setResults(res.results);
-      } else {
-        setResults([]);
-      }
-    } catch (err) {
-      console.error('Browse search error:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchQuery, browsePlatformFilter, browseOrdering]);
-
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(doSearch, 300);
-    return () => {
+  const handleSearchChange = useCallback(
+    (text: string) => {
+      setSearchQuery(text);
       if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [doSearch]);
+      debounceRef.current = setTimeout(() => setDebouncedQuery(text), 300);
+    },
+    [setSearchQuery]
+  );
 
-  const handleAddToBacklog = async (rawgGame: RawgGame) => {
-    let gameId: string;
-    const existing = await getGameByRawgSlug(db, rawgGame.slug);
-    if (existing) {
-      await updateBacklogStatus(db, existing.id, 'want_to_play');
-      gameId = existing.id;
-    } else {
-      gameId = randomUUID();
-      const platformEntry = PLATFORMS.find((p) =>
-        rawgGame.platforms?.some((rp) => rp.platform.id === p.rawgId)
-      );
-      await insertGame(db, {
-        id: gameId,
-        rawg_id: rawgGame.id,
-        rawg_slug: rawgGame.slug,
-        title: rawgGame.name,
-        platform: platformEntry?.id ?? 'unknown',
-        genre: rawgGame.genres?.map((g) => g.name).join(', ') ?? null,
-        curated_vibe: null,
-        curated_desc: null,
-        metacritic: rawgGame.metacritic,
-        rawg_rating: rawgGame.rating,
-        release_date: rawgGame.released,
-        background_image: rawgGame.background_image,
-        developer: null,
-        publisher: null,
-        description: null,
-        playtime: rawgGame.playtime,
-        esrb_rating: null,
-        website: null,
-        metacritic_url: null,
-        backlog_status: 'want_to_play',
-        last_enriched: null,
-      });
-    }
+  const searchResult = useRawgSearch(debouncedQuery, browsePlatformFilter, browseOrdering);
+  const topResult = useRawgTopGames(
+    debouncedQuery.trim() ? null : browsePlatformFilter,
+    browseOrdering
+  );
 
-    // Enrich in background — don't await so the UI stays responsive
-    const game = await getGameById(db, gameId);
-    if (game && !game.last_enriched) {
-      enrichGame(db, game).catch((err) =>
-        console.error(`Enrichment failed for ${game.title}:`, err)
-      );
-    }
-  };
+  const results = useMemo(() => {
+    if (debouncedQuery.trim()) return searchResult.data?.results ?? [];
+    if (browsePlatformFilter) return topResult.data?.results ?? [];
+    return [];
+  }, [debouncedQuery, browsePlatformFilter, searchResult.data, topResult.data]);
+
+  const loading = debouncedQuery.trim()
+    ? searchResult.isPending && searchResult.fetchStatus !== 'idle'
+    : browsePlatformFilter
+      ? topResult.isPending && topResult.fetchStatus !== 'idle'
+      : false;
+
+  const addToBacklog = useAddToBacklog();
 
   const renderItem = ({ item }: { item: RawgGame }) => (
     <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
-    <Pressable
-      onPress={() => {
-        router.push(`/game/${item.slug}`);
-      }}
-      className="rounded-lg overflow-hidden"
-      style={{ backgroundColor: Colors.surface }}
-    >
-      <Image
-        source={{ uri: item.background_image ?? undefined }}
-        style={{ width: '100%', aspectRatio: 16 / 9 }}
-        contentFit="cover"
-        transition={200}
-      />
-      <Box className="p-2 gap-1">
-        <Text className="text-typography-white text-sm font-bold" numberOfLines={1}>
-          {item.name}
-        </Text>
-        <HStack className="items-center justify-between">
-          <Text className="text-typography-gray text-xs" numberOfLines={1}>
-            {item.genres?.map((g) => g.name).join(', ') ?? ''}
+      <Pressable
+        onPress={() => router.push(`/game/${item.slug}`)}
+        className="rounded-lg overflow-hidden"
+        style={{ backgroundColor: Colors.surface }}
+      >
+        <Image
+          source={{ uri: item.background_image ?? undefined }}
+          style={{ width: '100%', aspectRatio: 16 / 9 }}
+          contentFit="cover"
+          transition={200}
+        />
+        <Box className="p-2 gap-1">
+          <Text className="text-typography-white text-sm font-bold" numberOfLines={1}>
+            {item.name}
           </Text>
-          <MetacriticBadge score={item.metacritic} />
-        </HStack>
-        <Pressable
-          onPress={() => handleAddToBacklog(item)}
-          className="mt-1 px-2 py-1 rounded self-start"
-          style={{ backgroundColor: Colors.tint }}
-        >
-          <Text className="text-typography-white text-xs font-bold">+ Backlog</Text>
-        </Pressable>
-      </Box>
-    </Pressable>
+          <HStack className="items-center justify-between">
+            <Text className="text-typography-gray text-xs" numberOfLines={1}>
+              {item.genres?.map((g) => g.name).join(', ') ?? ''}
+            </Text>
+            <MetacriticBadge score={item.metacritic} />
+          </HStack>
+          <Pressable
+            onPress={() => addToBacklog.mutate({ rawgGame: item })}
+            className="mt-1 px-2 py-1 rounded self-start"
+            style={{ backgroundColor: Colors.tint }}
+          >
+            <Text className="text-typography-white text-xs font-bold">+ Backlog</Text>
+          </Pressable>
+        </Box>
+      </Pressable>
     </View>
   );
 
@@ -152,7 +98,7 @@ export default function BrowseScreen() {
       <Box className="px-4 pt-3">
         <TextInput
           value={searchQuery}
-          onChangeText={setSearchQuery}
+          onChangeText={handleSearchChange}
           placeholder="Search games..."
           placeholderTextColor={Colors.textMuted}
           style={{

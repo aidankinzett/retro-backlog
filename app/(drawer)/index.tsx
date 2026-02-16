@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useSQLiteContext } from 'expo-sqlite';
+import { useMemo } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
@@ -7,30 +6,16 @@ import { VStack } from '@/components/ui/vstack';
 import { SystemSelector } from '@/components/system-selector';
 import { GameGrid } from '@/components/game-grid';
 import { useUIStore } from '@/stores/ui';
-import { getGamesByPlatform, type Game } from '@/services/database';
+import { useGamesByPlatform } from '@/hooks/use-db-queries';
 
 export default function HomeScreen() {
-  const db = useSQLiteContext();
   const currentSystemId = useUIStore((s) => s.currentSystemId);
   const setCurrentSystemId = useUIStore((s) => s.setCurrentSystemId);
 
-  const [essentials, setEssentials] = useState<Game[]>([]);
-  const [hiddenGems, setHiddenGems] = useState<Game[]>([]);
+  const { data: essentials = [] } = useGamesByPlatform(currentSystemId, 'essential');
+  const { data: hiddenGems = [] } = useGamesByPlatform(currentSystemId, 'hidden_gem');
 
-  const loadGames = useCallback(async () => {
-    const [ess, gems] = await Promise.all([
-      getGamesByPlatform(db, currentSystemId, 'essential'),
-      getGamesByPlatform(db, currentSystemId, 'hidden_gem'),
-    ]);
-    setEssentials(ess);
-    setHiddenGems(gems);
-  }, [db, currentSystemId]);
-
-  useEffect(() => {
-    loadGames();
-  }, [loadGames]);
-
-  const allGames = [...essentials, ...hiddenGems];
+  const allGames = useMemo(() => [...essentials, ...hiddenGems], [essentials, hiddenGems]);
   const hasGames = allGames.length > 0;
 
   return (

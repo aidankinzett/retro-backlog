@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import type { RawgGame } from '@/services/rawg';
 
 export type BacklogStatus = 'none' | 'want_to_play' | 'playing' | 'completed' | 'dropped';
 
@@ -18,8 +17,6 @@ interface UIState {
   // Browse screen
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  searchResults: RawgGame[];
-  setSearchResults: (results: RawgGame[]) => void;
   browsePlatformFilter: number | null;
   setBrowsePlatformFilter: (id: number | null) => void;
   browseOrdering: string;
@@ -30,10 +27,6 @@ interface UIState {
   setBacklogStatusFilter: (status: BacklogStatus | null) => void;
   backlogPlatformFilter: string | null;
   setBacklogPlatformFilter: (platform: string | null) => void;
-
-  // Loading
-  loading: Record<string, boolean>;
-  setLoading: (key: string, value: boolean) => void;
 
   // Accent color override
   accentOverride: string | null;
@@ -48,8 +41,6 @@ export const useUIStore = create<UIState>()((set) => ({
   // Browse
   searchQuery: '',
   setSearchQuery: (query) => set({ searchQuery: query }),
-  searchResults: [],
-  setSearchResults: (results) => set({ searchResults: results }),
   browsePlatformFilter: null,
   setBrowsePlatformFilter: (id) => set({ browsePlatformFilter: id }),
   browseOrdering: '-metacritic',
@@ -60,11 +51,6 @@ export const useUIStore = create<UIState>()((set) => ({
   setBacklogStatusFilter: (status) => set({ backlogStatusFilter: status }),
   backlogPlatformFilter: null,
   setBacklogPlatformFilter: (platform) => set({ backlogPlatformFilter: platform }),
-
-  // Loading
-  loading: {},
-  setLoading: (key, value) =>
-    set((state) => ({ loading: { ...state.loading, [key]: value } })),
 
   // Accent
   accentOverride: null,

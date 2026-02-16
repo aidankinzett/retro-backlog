@@ -24,7 +24,7 @@ export function GameGrid({ games }: GameGridProps) {
         <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
           <GameCard
             game={item}
-            onPress={() => router.push(`/game/${item.id}`)}
+            onPress={() => router.push(`/game/${item.rawg_slug ?? item.id}`)}
           />
         </View>
       )}
