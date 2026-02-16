@@ -1,4 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+// Stub environment BEFORE importing the module that uses it at top-level
+vi.stubEnv('EXPO_PUBLIC_PROXY_URL', '');
+
 import { searchGames, getTopGames, getGameDetails } from '@/services/rawg';
 
 vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
@@ -20,7 +24,9 @@ function mockFetchError(status: number) {
 const emptyPaginated = { count: 0, next: null, previous: null, results: [] };
 
 describe('searchGames', () => {
-  beforeEach(() => vi.restoreAllMocks());
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
 
   it('includes search query and API key in URL', async () => {
     mockFetch(emptyPaginated);
@@ -120,6 +126,9 @@ describe('error handling', () => {
 
 describe('API key validation', () => {
   afterEach(() => {
+    vi.unstubAllEnvs();
+    // Re-enable for other tests if needed, though they are in different suites
+    vi.stubEnv('EXPO_PUBLIC_PROXY_URL', '');
     vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
   });
 

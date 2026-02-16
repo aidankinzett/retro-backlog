@@ -95,7 +95,7 @@ describe('enrichGame', () => {
     });
 
     await enrichGame(db, game);
-    expect(rawg.getGameDetails).toHaveBeenCalledWith(456);
+    expect(rawg.getGameDetails).toHaveBeenCalledWith('456');
   });
 
   it('maps RAWG details to enrichment data correctly', async () => {
