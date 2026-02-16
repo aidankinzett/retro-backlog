@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -27,6 +28,7 @@ export default function GameDetailScreen() {
   const router = useRouter();
   const db = useSQLiteContext();
   const { isLandscape } = useOrientation();
+  const insets = useSafeAreaInsets();
 
   const [game, setGame] = useState<Game | null>(null);
   const [screenshots, setScreenshots] = useState<Screenshot[]>([]);
@@ -184,7 +186,7 @@ export default function GameDetailScreen() {
   return (
     <Box className="flex-1 bg-background-dark">
       {/* Back button */}
-      <Box className="px-4 pt-3 pb-1">
+      <Box className="px-4 pb-1" style={{ paddingTop: Math.max(insets.top, 12) }}>
         <Pressable
           onPress={() => router.back()}
           className="self-start px-3 py-2 rounded-lg bg-background-50"

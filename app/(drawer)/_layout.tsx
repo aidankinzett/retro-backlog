@@ -1,9 +1,11 @@
 import { Drawer } from 'expo-router/drawer';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 
 export default function DrawerLayout() {
   const { isLandscape } = useOrientation();
+  const insets = useSafeAreaInsets();
 
   return (
     <Drawer
@@ -22,6 +24,7 @@ export default function DrawerLayout() {
         headerShown: !isLandscape,
         sceneStyle: {
           backgroundColor: Colors.background,
+          paddingTop: isLandscape ? insets.top : 0,
         },
       }}
     >
