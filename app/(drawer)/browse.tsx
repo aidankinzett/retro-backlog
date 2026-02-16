@@ -123,7 +123,8 @@ export default function BrowseScreen() {
         </HStack>
         <Pressable
           onPress={() => handleAddToBacklog(item)}
-          className="mt-1 px-2 py-1 rounded bg-primary-600 self-start"
+          className="mt-1 px-2 py-1 rounded self-start"
+          style={{ backgroundColor: Colors.tint }}
         >
           <Text className="text-typography-white text-xs font-bold">+ Backlog</Text>
         </Pressable>
@@ -155,7 +156,8 @@ export default function BrowseScreen() {
       <HStack className="flex-wrap gap-2 px-4 py-2">
         <Pressable
           onPress={() => setBrowsePlatformFilter(null)}
-          className={`px-3 py-1 rounded-full ${browsePlatformFilter === null ? 'bg-primary-600' : 'bg-background-50'}`}
+          className={`px-3 py-1 rounded-full ${browsePlatformFilter === null ? '' : 'bg-background-50'}`}
+          style={browsePlatformFilter === null ? { backgroundColor: Colors.tint } : undefined}
         >
           <Text className="text-typography-white text-xs">All</Text>
         </Pressable>
