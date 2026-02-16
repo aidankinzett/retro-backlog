@@ -303,7 +303,7 @@ export const SEED_GAMES: SeedGame[] = [
   // --- GameCube (20 games) ---
   {
     title: 'The Legend of Zelda: The Wind Waker',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Action Adventure',
     curated_vibe: 'essential',
     rawg_slug: 'the-legend-of-zelda-the-wind-waker',
@@ -311,7 +311,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'The Legend of Zelda: Twilight Princess',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Action Adventure',
     curated_vibe: 'essential',
     rawg_slug: 'the-legend-of-zelda-twilight-princess',
@@ -319,7 +319,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Metroid Prime',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'FPS Adventure',
     curated_vibe: 'essential',
     rawg_slug: 'metroid-prime',
@@ -327,7 +327,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Metroid Prime 2: Echoes',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'FPS Adventure',
     curated_vibe: 'essential',
     rawg_slug: 'metroid-prime-2-echoes',
@@ -335,7 +335,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Super Smash Bros. Melee',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Fighting',
     curated_vibe: 'essential',
     rawg_slug: 'super-smash-bros-melee',
@@ -343,7 +343,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Resident Evil',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Horror',
     curated_vibe: 'essential',
     rawg_slug: 'resident-evil',
@@ -351,7 +351,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Paper Mario: The Thousand-Year Door',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'RPG',
     curated_vibe: 'essential',
     rawg_slug: 'paper-mario-the-thousand-year-door',
@@ -359,7 +359,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'F-Zero GX',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Racing',
     curated_vibe: 'essential',
     rawg_slug: 'f-zero-gx',
@@ -367,7 +367,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Super Mario Sunshine',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Platformer',
     curated_vibe: 'essential',
     rawg_slug: 'super-mario-sunshine',
@@ -375,7 +375,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: "Luigi's Mansion",
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Action Adventure',
     curated_vibe: 'essential',
     rawg_slug: 'luigis-mansion',
@@ -383,7 +383,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Star Wars Rogue Squadron II: Rogue Leader',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Flight Action',
     curated_vibe: 'essential',
     rawg_slug: 'star-wars-rogue-squadron-ii-rogue-leader',
@@ -391,7 +391,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: "Eternal Darkness: Sanity's Requiem",
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Horror',
     curated_vibe: 'essential',
     rawg_slug: 'eternal-darkness-sanitys-requiem',
@@ -399,7 +399,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Tales of Symphonia',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'JRPG',
     curated_vibe: 'essential',
     rawg_slug: 'tales-of-symphonia',
@@ -407,7 +407,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Fire Emblem: Path of Radiance',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Tactical RPG',
     curated_vibe: 'essential',
     rawg_slug: 'fire-emblem-path-of-radiance',
@@ -415,7 +415,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Animal Crossing',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Life Sim',
     curated_vibe: 'essential',
     rawg_slug: 'animal-crossing',
@@ -423,7 +423,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Baten Kaitos: Eternal Wings and the Lost Ocean',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'JRPG',
     curated_vibe: 'hidden_gem',
     rawg_slug: 'baten-kaitos-eternal-wings-and-the-lost-ocean',
@@ -431,7 +431,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Chibi-Robo!',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Adventure',
     curated_vibe: 'hidden_gem',
     rawg_slug: 'chibi-robo',
@@ -439,7 +439,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Skies of Arcadia Legends',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'JRPG',
     curated_vibe: 'hidden_gem',
     rawg_slug: 'skies-of-arcadia-legends',
@@ -447,7 +447,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Custom Robo',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Arena Fighter',
     curated_vibe: 'hidden_gem',
     rawg_slug: 'custom-robo',
@@ -455,7 +455,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Gotcha Force',
-    platform: 'gc',
+    platform: 'gamecube',
     genre: 'Arena Fighter',
     curated_vibe: 'hidden_gem',
     rawg_slug: 'gotcha-force',
@@ -875,7 +875,7 @@ export const SEED_GAMES: SeedGame[] = [
   // --- Genesis (4 games) ---
   {
     title: 'Streets of Rage 2',
-    platform: 'genesis',
+    platform: 'megadrive',
     genre: 'Beat-em-up',
     curated_vibe: 'essential',
     rawg_slug: 'streets-of-rage-2',
@@ -883,7 +883,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Sonic the Hedgehog 2',
-    platform: 'genesis',
+    platform: 'megadrive',
     genre: 'Platformer',
     curated_vibe: 'essential',
     rawg_slug: 'sonic-the-hedgehog-2',
@@ -891,7 +891,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Sonic 3 & Knuckles',
-    platform: 'genesis',
+    platform: 'megadrive',
     genre: 'Platformer',
     curated_vibe: 'essential',
     rawg_slug: 'sonic-the-hedgehog-3',
@@ -899,7 +899,7 @@ export const SEED_GAMES: SeedGame[] = [
   },
   {
     title: 'Gunstar Heroes',
-    platform: 'genesis',
+    platform: 'megadrive',
     genre: 'Run and Gun',
     curated_vibe: 'hidden_gem',
     rawg_slug: 'gunstar-heroes',
