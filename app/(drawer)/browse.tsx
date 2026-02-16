@@ -12,7 +12,8 @@ import { Colors } from '@/constants/theme';
 import { PLATFORMS } from '@/constants/platforms';
 import { useUIStore } from '@/stores/ui';
 import { useRawgSearch, useRawgTopGames } from '@/hooks/use-rawg-queries';
-import { useAddToBacklog } from '@/hooks/use-db-queries';
+import { useBacklogSlugs } from '@/hooks/use-db-queries';
+import { BacklogButton } from '@/components/backlog-button';
 import type { RawgGame } from '@/services/rawg';
 
 export default function BrowseScreen() {
@@ -55,7 +56,7 @@ export default function BrowseScreen() {
       ? topResult.isPending && topResult.fetchStatus !== 'idle'
       : false;
 
-  const addToBacklog = useAddToBacklog();
+  const { data: backlogSlugs } = useBacklogSlugs();
 
   const renderItem = ({ item }: { item: RawgGame }) => (
     <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
@@ -80,13 +81,10 @@ export default function BrowseScreen() {
             </Text>
             <MetacriticBadge score={item.metacritic} />
           </HStack>
-          <Pressable
-            onPress={() => addToBacklog.mutate({ rawgGame: item })}
-            className="mt-1 px-2 py-1 rounded self-start"
-            style={{ backgroundColor: Colors.tint }}
-          >
-            <Text className="text-typography-white text-xs font-bold">+ Backlog</Text>
-          </Pressable>
+          <BacklogButton
+            game={item}
+            isInBacklog={backlogSlugs?.has(item.slug) ?? false}
+          />
         </Box>
       </Pressable>
     </View>

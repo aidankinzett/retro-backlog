@@ -11,7 +11,8 @@ import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 import { PLATFORMS } from '@/constants/platforms';
 import { useTopRetroGames } from '@/hooks/use-rawg-queries';
-import { useAddToBacklog } from '@/hooks/use-db-queries';
+import { useBacklogSlugs } from '@/hooks/use-db-queries';
+import { BacklogButton } from '@/components/backlog-button';
 import type { RawgGame } from '@/services/rawg';
 
 function getPlatformLabel(game: RawgGame): string | null {
@@ -27,7 +28,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { columns } = useOrientation();
   const { data, isPending, fetchStatus } = useTopRetroGames();
-  const addToBacklog = useAddToBacklog();
+  const { data: backlogSlugs } = useBacklogSlugs();
 
   const loading = isPending && fetchStatus !== 'idle';
   const results = data?.results ?? [];
@@ -63,13 +64,10 @@ export default function HomeScreen() {
               ) : (
                 <View />
               )}
-              <Pressable
-                onPress={() => addToBacklog.mutate({ rawgGame: item })}
-                className="px-2 py-1 rounded self-end"
-                style={{ backgroundColor: Colors.tint }}
-              >
-                <Text className="text-typography-white text-xs font-bold">+ Backlog</Text>
-              </Pressable>
+              <BacklogButton
+                game={item}
+                isInBacklog={backlogSlugs?.has(item.slug) ?? false}
+              />
             </HStack>
           </Box>
         </Pressable>

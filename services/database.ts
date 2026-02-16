@@ -189,6 +189,13 @@ export async function updateGameEnrichment(
   await db.runAsync(`UPDATE games SET ${fields.join(', ')} WHERE id = ?`, values);
 }
 
+export async function getBacklogSlugs(db: SQLiteDatabase): Promise<string[]> {
+  const rows = await db.getAllAsync<{ rawg_slug: string }>(
+    "SELECT rawg_slug FROM games WHERE backlog_status != 'none' AND rawg_slug IS NOT NULL"
+  );
+  return rows.map((r) => r.rawg_slug);
+}
+
 export async function getBacklogGames(
   db: SQLiteDatabase,
   status?: string,

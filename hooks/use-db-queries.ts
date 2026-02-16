@@ -5,6 +5,7 @@ import {
   getGameById,
   getBacklogGames,
   getBacklogStats,
+  getBacklogSlugs,
   getScreenshots,
   insertGame,
   updateBacklogStatus,
@@ -62,6 +63,18 @@ export function useBacklogStats() {
   return useQuery({
     queryKey: ['backlog-stats'],
     queryFn: () => getBacklogStats(db),
+    networkMode: 'always',
+  });
+}
+
+export function useBacklogSlugs() {
+  const db = useSQLiteContext();
+  return useQuery({
+    queryKey: ['backlog-slugs'],
+    queryFn: async () => {
+      const slugs = await getBacklogSlugs(db);
+      return new Set(slugs);
+    },
     networkMode: 'always',
   });
 }
@@ -137,6 +150,7 @@ export function useAddToBacklog() {
     onSuccess: (_gameId, { rawgGame }) => {
       queryClient.invalidateQueries({ queryKey: ['backlog'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-slugs'] });
       queryClient.invalidateQueries({ queryKey: ['game', rawgGame.slug] });
       queryClient.invalidateQueries({ queryKey: ['settings', 'counts'] });
     },
