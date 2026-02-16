@@ -38,6 +38,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Cache Expo prebuild
+        uses: actions/cache@v4
+        with:
+          path: android
+          key: prebuild-android-${{ hashFiles('app.json', 'package.json', 'pnpm-lock.yaml') }}
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('android/build.gradle', 'android/app/build.gradle') }}
+          restore-keys: gradle-
+
       - name: Build APK
         run: eas build --local --platform android --profile preview --output ./app.apk --non-interactive
 
