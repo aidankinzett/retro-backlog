@@ -9,6 +9,9 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  const requestId = crypto.randomUUID().slice(0, 8)
+  console.log(`[${requestId}] Incoming request: ${req.method} ${req.url}`)
+
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -28,13 +31,15 @@ serve(async (req) => {
     
     // Force the API key
     if (!RAWG_API_KEY) {
+      console.error(`[${requestId}] Configuration error: RAWG_API_KEY is not set`)
       throw new Error("RAWG_API_KEY is not set")
     }
     rawgUrl.searchParams.set("key", RAWG_API_KEY)
 
-    console.log(`Proxying request to: ${rawgUrl.toString().replace(RAWG_API_KEY, "REDACTED")}`)
+    console.log(`[${requestId}] Proxying to RAWG: ${rawgUrl.pathname}${rawgUrl.search.replace(RAWG_API_KEY, "REDACTED")}`)
 
     const response = await fetch(rawgUrl.toString())
+    console.log(`[${requestId}] RAWG response: ${response.status} ${response.statusText}`)
     
     // Safely parse JSON or handle non-JSON responses
     let data;
@@ -43,12 +48,12 @@ serve(async (req) => {
       try {
         data = await response.json()
       } catch (e) {
-        console.error("Error parsing RAWG JSON:", e)
+        console.error(`[${requestId}] JSON Parse Error:`, e)
         data = { error: "Failed to parse RAWG response" }
       }
     } else {
       const text = await response.text()
-      console.warn(`Non-JSON response from RAWG (${response.status}):`, text.slice(0, 200))
+      console.warn(`[${requestId}] Non-JSON response (${response.status}):`, text.slice(0, 200))
       data = { error: "RAWG returned a non-JSON response", status: response.status }
     }
 
@@ -57,8 +62,8 @@ serve(async (req) => {
       status: response.status,
     })
   } catch (err) {
-    console.error("Proxy error:", err)
     const message = err instanceof Error ? err.message : "Internal server error"
+    console.error(`[${requestId}] Proxy error:`, message, err)
     return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
