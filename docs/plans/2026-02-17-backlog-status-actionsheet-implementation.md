@@ -13,6 +13,7 @@
 ### Task 1: Add Gluestack Actionsheet UI Component
 
 **Files:**
+
 - Create: `components/ui/actionsheet/index.tsx`
 
 This is the Gluestack UI component following the same pattern as existing components in `components/ui/`. Copy the official Gluestack v3 actionsheet component source.
@@ -22,6 +23,7 @@ This is the Gluestack UI component following the same pattern as existing compon
 Create `components/ui/actionsheet/index.tsx` with the official Gluestack v3 source. This is a copy-paste from the upstream repo (`src/components/ui/actionsheet/index.tsx`), adapted for the dark theme.
 
 The file uses:
+
 - `createActionsheet` from `@gluestack-ui/core/actionsheet/creator`
 - `@legendapp/motion` for animations (already installed)
 - `PrimitiveIcon, UIIcon` from `@gluestack-ui/core/icon/creator`
@@ -30,6 +32,7 @@ The file uses:
 - `cssInterop` from `nativewind`
 
 Key style values (dark-theme aware):
+
 - `actionsheetContentStyle` base: `'items-center rounded-tl-3xl rounded-tr-3xl p-5 pt-2 bg-background-0 web:pointer-events-auto web:select-none shadow-hard-5 border border-b-0 border-outline-100 pb-safe'`
 - `actionsheetBackdropStyle` base: `'absolute left-0 top-0 right-0 bottom-0 bg-background-dark web:cursor-default web:pointer-events-auto'`
 - `actionsheetItemStyle` base: `'w-full flex-row items-center p-3 rounded-sm data-[disabled=true]:opacity-40 hover:bg-background-50 active:bg-background-100 data-[focus=true]:bg-background-100 gap-2'`
@@ -48,6 +51,7 @@ git commit -m "feat: add Gluestack Actionsheet UI component"
 ### Task 2: Create BacklogStatusSheet Component
 
 **Files:**
+
 - Create: `components/backlog-status-sheet.tsx`
 
 **Step 1: Create the component**
@@ -96,7 +100,7 @@ export function BacklogStatusSheet({
           <ActionsheetDragIndicator />
         </ActionsheetDragIndicatorWrapper>
         <Box className="w-full pb-2">
-          <Text className="text-typography-white font-bold text-base px-3">
+          <Text className="px-3 text-base font-bold text-typography-white">
             Set Status
           </Text>
         </Box>
@@ -109,7 +113,11 @@ export function BacklogStatusSheet({
               style={isActive ? { backgroundColor: Colors.tint } : undefined}
             >
               <ActionsheetItemText
-                className={isActive ? 'text-typography-white font-bold' : 'text-typography-white'}
+                className={
+                  isActive
+                    ? 'font-bold text-typography-white'
+                    : 'text-typography-white'
+                }
               >
                 {s.label}
               </ActionsheetItemText>
@@ -118,9 +126,9 @@ export function BacklogStatusSheet({
         })}
         {showRemove && currentStatus !== 'none' && (
           <>
-            <Box className="w-full h-px bg-background-100 my-1" />
+            <Box className="my-1 h-px w-full bg-background-100" />
             <ActionsheetItem onPress={() => handleSelect('none')}>
-              <ActionsheetItemText className="text-red-400 font-bold">
+              <ActionsheetItemText className="font-bold text-red-400">
                 Remove from Backlog
               </ActionsheetItemText>
             </ActionsheetItem>
@@ -149,11 +157,13 @@ git commit -m "feat: add BacklogStatusSheet reusable component"
 ### Task 3: Integrate ActionSheet into Backlog Screen
 
 **Files:**
+
 - Modify: `app/(drawer)/backlog.tsx`
 
 **Step 1: Update the backlog screen**
 
 Changes:
+
 1. Import `BacklogStatusSheet`
 2. Add `selectedGame` state (`Game | null`)
 3. Remove `cycleStatus` function
@@ -165,23 +175,29 @@ Changes:
    - `onStatusChange` that calls `updateStatus.mutate`
 
 The full updated `renderItem` should change the status text Pressable from:
+
 ```tsx
 <Pressable onPress={() => cycleStatus(item)}>
   <Text style={{ color: Colors.tint }} className="text-xs font-bold">
-    {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)?.shortLabel ?? 'Unknown'}
+    {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)
+      ?.shortLabel ?? 'Unknown'}
   </Text>
 </Pressable>
 ```
+
 to:
+
 ```tsx
 <Pressable onPress={() => setSelectedGame(item)}>
   <Text style={{ color: Colors.tint }} className="text-xs font-bold">
-    {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)?.shortLabel ?? 'Unknown'}
+    {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)
+      ?.shortLabel ?? 'Unknown'}
   </Text>
 </Pressable>
 ```
 
 Add after the `FlatList` closing tag (but still inside the root `Box`):
+
 ```tsx
 <BacklogStatusSheet
   isOpen={!!selectedGame}
@@ -189,7 +205,11 @@ Add after the `FlatList` closing tag (but still inside the root `Box`):
   currentStatus={(selectedGame?.backlog_status as BacklogStatus) ?? 'none'}
   onStatusChange={(status) => {
     if (selectedGame) {
-      updateStatus.mutate({ gameId: selectedGame.id, slug: selectedGame.rawg_slug, status });
+      updateStatus.mutate({
+        gameId: selectedGame.id,
+        slug: selectedGame.rawg_slug,
+        status,
+      });
     }
     setSelectedGame(null);
   }}
@@ -212,19 +232,24 @@ git commit -m "feat: replace cycle-status with ActionSheet on backlog screen"
 ### Task 4: Integrate ActionSheet into Game Detail Screen
 
 **Files:**
+
 - Modify: `app/game/[id].tsx`
 
 **Step 1: Update the game detail screen**
 
 Changes:
+
 1. Import `BacklogStatusSheet` and add `useState` for `showStatusSheet`
 2. Replace the horizontal chip row (lines 143-164) with a single pressable status display:
 
 Replace the entire backlog status section:
+
 ```tsx
-{/* Backlog status */}
-<VStack className="gap-2 mt-2">
-  <Text className="text-typography-gray text-sm font-bold">Backlog Status</Text>
+{
+  /* Backlog status */
+}
+<VStack className="mt-2 gap-2">
+  <Text className="text-sm font-bold text-typography-gray">Backlog Status</Text>
   <HStack className="flex-wrap gap-2">
     {BACKLOG_STATUSES.map((s) => {
       const isActive = backlogStatus === s.value;
@@ -232,7 +257,7 @@ Replace the entire backlog status section:
         <Pressable
           key={s.value}
           onPress={() => handleStatusChange(s.value)}
-          className={`px-3 py-1.5 rounded-full ${isActive ? '' : 'bg-background-50'}`}
+          className={`rounded-full px-3 py-1.5 ${isActive ? '' : 'bg-background-50'}`}
           style={isActive ? { backgroundColor: Colors.tint } : undefined}
         >
           <Text
@@ -244,38 +269,50 @@ Replace the entire backlog status section:
       );
     })}
   </HStack>
-</VStack>
+</VStack>;
 ```
 
 With:
+
 ```tsx
-{/* Backlog status */}
-<VStack className="gap-2 mt-2">
-  <Text className="text-typography-gray text-sm font-bold">Backlog Status</Text>
+{
+  /* Backlog status */
+}
+<VStack className="mt-2 gap-2">
+  <Text className="text-sm font-bold text-typography-gray">Backlog Status</Text>
   <Pressable
     onPress={() => setShowStatusSheet(true)}
-    className="self-start px-4 py-2 rounded-lg bg-background-50 flex-row items-center gap-2"
+    className="flex-row items-center gap-2 self-start rounded-lg bg-background-50 px-4 py-2"
   >
-    <Text style={backlogStatus !== 'none' ? { color: Colors.tint } : undefined} className="text-sm font-bold text-typography-gray">
-      {BACKLOG_STATUSES.find((s) => s.value === backlogStatus)?.label ?? 'Add to Backlog'}
+    <Text
+      style={backlogStatus !== 'none' ? { color: Colors.tint } : undefined}
+      className="text-sm font-bold text-typography-gray"
+    >
+      {BACKLOG_STATUSES.find((s) => s.value === backlogStatus)?.label ??
+        'Add to Backlog'}
     </Text>
-    <Text className="text-typography-gray text-xs">▼</Text>
+    <Text className="text-xs text-typography-gray">▼</Text>
   </Pressable>
-</VStack>
+</VStack>;
 ```
 
 3. Update `handleStatusChange` to work with the ActionSheet:
+
 ```tsx
 const handleStatusChange = (status: BacklogStatus) => {
   if (game) {
     updateStatus.mutate({ gameId: game.id, slug: game.rawg_slug, status });
   } else if (rawgGame) {
-    addToBacklog.mutate({ rawgGame, status: status === 'none' ? 'want_to_play' : status });
+    addToBacklog.mutate({
+      rawgGame,
+      status: status === 'none' ? 'want_to_play' : status,
+    });
   }
 };
 ```
 
 4. Add `BacklogStatusSheet` at the bottom of the return (inside the root `Box`, after `ScrollView`):
+
 ```tsx
 <BacklogStatusSheet
   isOpen={showStatusSheet}
@@ -307,6 +344,7 @@ git commit -m "feat: replace status chips with ActionSheet on game detail screen
 **Step 1: Start the dev server and verify**
 
 Use the mobile MCP to verify:
+
 1. Open the backlog screen — tap a game's status text → ActionSheet should slide up
 2. Select a different status → sheet closes, status updates
 3. Tap "Remove from Backlog" → game is removed

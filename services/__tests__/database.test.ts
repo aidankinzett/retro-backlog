@@ -21,10 +21,14 @@ function createMockDb(): SQLiteDatabase {
 
 describe('migrateDbIfNeeded', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('skips migration when version is current', async () => {
-    vi.mocked(db.getFirstAsync).mockResolvedValue({ user_version: DATABASE_VERSION });
+    vi.mocked(db.getFirstAsync).mockResolvedValue({
+      user_version: DATABASE_VERSION,
+    });
     await migrateDbIfNeeded(db);
     expect(db.execAsync).not.toHaveBeenCalled();
   });
@@ -33,7 +37,9 @@ describe('migrateDbIfNeeded', () => {
     vi.mocked(db.getFirstAsync).mockResolvedValue({ user_version: 0 });
     await migrateDbIfNeeded(db);
     expect(db.execAsync).toHaveBeenCalledTimes(2);
-    expect(db.execAsync).toHaveBeenLastCalledWith(`PRAGMA user_version = ${DATABASE_VERSION}`);
+    expect(db.execAsync).toHaveBeenLastCalledWith(
+      `PRAGMA user_version = ${DATABASE_VERSION}`,
+    );
   });
 
   it('runs migration when user_version is null', async () => {
@@ -45,13 +51,15 @@ describe('migrateDbIfNeeded', () => {
 
 describe('getGamesByPlatform', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('queries by platform without vibe filter', async () => {
     await getGamesByPlatform(db, 'ps2');
     expect(db.getAllAsync).toHaveBeenCalledWith(
       expect.stringContaining('WHERE platform = ?'),
-      ['ps2']
+      ['ps2'],
     );
   });
 
@@ -59,20 +67,22 @@ describe('getGamesByPlatform', () => {
     await getGamesByPlatform(db, 'ps2', 'essential');
     expect(db.getAllAsync).toHaveBeenCalledWith(
       expect.stringContaining('AND curated_vibe = ?'),
-      ['ps2', 'essential']
+      ['ps2', 'essential'],
     );
   });
 });
 
 describe('getBacklogGames', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('queries all backlog games with no filters', async () => {
     await getBacklogGames(db);
     expect(db.getAllAsync).toHaveBeenCalledWith(
       expect.stringContaining("backlog_status != 'none'"),
-      []
+      [],
     );
   });
 
@@ -80,7 +90,7 @@ describe('getBacklogGames', () => {
     await getBacklogGames(db, 'playing');
     expect(db.getAllAsync).toHaveBeenCalledWith(
       expect.stringContaining('AND backlog_status = ?'),
-      ['playing']
+      ['playing'],
     );
   });
 
@@ -103,7 +113,9 @@ describe('getBacklogGames', () => {
 
 describe('getBacklogStats', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('aggregates stats correctly', async () => {
     vi.mocked(db.getAllAsync).mockResolvedValue([
@@ -151,7 +163,9 @@ describe('getBacklogStats', () => {
 
 describe('updateGameEnrichment', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('builds SET clause only for provided fields', async () => {
     await updateGameEnrichment(db, 'game-1', {
@@ -182,7 +196,9 @@ describe('updateGameEnrichment', () => {
 
 describe('insertScreenshots', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('inserts each screenshot individually', async () => {
     await insertScreenshots(db, [

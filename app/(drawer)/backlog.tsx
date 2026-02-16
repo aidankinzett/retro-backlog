@@ -13,12 +13,17 @@ import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 import { type Game } from '@/services/database';
 import { useUIStore, BACKLOG_STATUSES, type BacklogStatus } from '@/stores/ui';
-import { useBacklogGames, useBacklogStats, useUpdateBacklogStatus } from '@/hooks/use-db-queries';
+import {
+  useBacklogGames,
+  useBacklogStats,
+  useUpdateBacklogStatus,
+} from '@/hooks/use-db-queries';
 
-const ALL_FILTERS: { value: BacklogStatus | null; label: string; shortLabel: string }[] = [
-  { value: null, label: 'All', shortLabel: 'All' },
-  ...BACKLOG_STATUSES,
-];
+const ALL_FILTERS: {
+  value: BacklogStatus | null;
+  label: string;
+  shortLabel: string;
+}[] = [{ value: null, label: 'All', shortLabel: 'All' }, ...BACKLOG_STATUSES];
 
 export default function BacklogScreen() {
   const router = useRouter();
@@ -28,7 +33,15 @@ export default function BacklogScreen() {
   const setStatusFilter = useUIStore((s) => s.setBacklogStatusFilter);
 
   const { data: games = [] } = useBacklogGames(statusFilter ?? undefined);
-  const { data: stats = { total: 0, want_to_play: 0, playing: 0, completed: 0, dropped: 0 } } = useBacklogStats();
+  const {
+    data: stats = {
+      total: 0,
+      want_to_play: 0,
+      playing: 0,
+      completed: 0,
+      dropped: 0,
+    },
+  } = useBacklogStats();
   const updateStatus = useUpdateBacklogStatus();
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
@@ -36,7 +49,7 @@ export default function BacklogScreen() {
     <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
       <Pressable
         onPress={() => router.push(`/game/${item.rawg_slug ?? item.id}`)}
-        className="rounded-lg overflow-hidden"
+        className="overflow-hidden rounded-lg"
         style={{ backgroundColor: Colors.surface }}
       >
         <Image
@@ -45,14 +58,21 @@ export default function BacklogScreen() {
           contentFit="cover"
           transition={200}
         />
-        <Box className="p-2 gap-1">
-          <Text className="text-typography-white text-sm font-bold" numberOfLines={1}>
+        <Box className="gap-1 p-2">
+          <Text
+            className="text-sm font-bold text-typography-white"
+            numberOfLines={1}
+          >
             {item.title}
           </Text>
           <HStack className="items-center justify-between">
             <Pressable onPress={() => setSelectedGame(item)}>
-              <Text style={{ color: Colors.tint }} className="text-xs font-bold">
-                {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)?.shortLabel ?? 'Unknown'}
+              <Text
+                style={{ color: Colors.tint }}
+                className="text-xs font-bold"
+              >
+                {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)
+                  ?.shortLabel ?? 'Unknown'}
               </Text>
             </Pressable>
             <MetacriticBadge score={item.metacritic} />
@@ -65,22 +85,30 @@ export default function BacklogScreen() {
   return (
     <Box className="flex-1 bg-background-dark">
       {/* Stats bar */}
-      <HStack className="px-4 py-3 gap-4 flex-wrap">
+      <HStack className="flex-wrap gap-4 px-4 py-3">
         <VStack className="items-center">
-          <Text className="text-typography-white font-bold text-lg">{stats.total}</Text>
-          <Text className="text-typography-gray text-xs">Total</Text>
+          <Text className="text-lg font-bold text-typography-white">
+            {stats.total}
+          </Text>
+          <Text className="text-xs text-typography-gray">Total</Text>
         </VStack>
         <VStack className="items-center">
-          <Text className="text-typography-white font-bold text-lg">{stats.completed}</Text>
-          <Text className="text-typography-gray text-xs">Completed</Text>
+          <Text className="text-lg font-bold text-typography-white">
+            {stats.completed}
+          </Text>
+          <Text className="text-xs text-typography-gray">Completed</Text>
         </VStack>
         <VStack className="items-center">
-          <Text className="text-typography-white font-bold text-lg">{stats.playing}</Text>
-          <Text className="text-typography-gray text-xs">Playing</Text>
+          <Text className="text-lg font-bold text-typography-white">
+            {stats.playing}
+          </Text>
+          <Text className="text-xs text-typography-gray">Playing</Text>
         </VStack>
         <VStack className="items-center">
-          <Text className="text-typography-white font-bold text-lg">{stats.want_to_play}</Text>
-          <Text className="text-typography-gray text-xs">Want to Play</Text>
+          <Text className="text-lg font-bold text-typography-white">
+            {stats.want_to_play}
+          </Text>
+          <Text className="text-xs text-typography-gray">Want to Play</Text>
         </VStack>
       </HStack>
 
@@ -92,7 +120,7 @@ export default function BacklogScreen() {
             <Pressable
               key={f.value ?? 'all'}
               onPress={() => setStatusFilter(f.value)}
-              className={`px-3 py-1 rounded-full ${isActive ? '' : 'bg-background-50'}`}
+              className={`rounded-full px-3 py-1 ${isActive ? '' : 'bg-background-50'}`}
               style={isActive ? { backgroundColor: Colors.tint } : undefined}
             >
               <Text
@@ -117,7 +145,9 @@ export default function BacklogScreen() {
         ListEmptyComponent={
           <Box className="flex-1 items-center justify-center py-20">
             <Text className="text-typography-gray">
-              {statusFilter ? 'No games with this status' : 'Your backlog is empty. Browse games to add some!'}
+              {statusFilter
+                ? 'No games with this status'
+                : 'Your backlog is empty. Browse games to add some!'}
             </Text>
           </Box>
         }
@@ -125,10 +155,16 @@ export default function BacklogScreen() {
       <BacklogStatusSheet
         isOpen={!!selectedGame}
         onClose={() => setSelectedGame(null)}
-        currentStatus={(selectedGame?.backlog_status as BacklogStatus) ?? 'none'}
+        currentStatus={
+          (selectedGame?.backlog_status as BacklogStatus) ?? 'none'
+        }
         onStatusChange={(status) => {
           if (selectedGame) {
-            updateStatus.mutate({ gameId: selectedGame.id, slug: selectedGame.rawg_slug, status });
+            updateStatus.mutate({
+              gameId: selectedGame.id,
+              slug: selectedGame.rawg_slug,
+              status,
+            });
           }
           setSelectedGame(null);
         }}

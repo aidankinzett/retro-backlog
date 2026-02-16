@@ -13,11 +13,13 @@
 ### Task 1: Install new dependencies
 
 **Files:**
+
 - Modify: `package.json`
 
 **Step 1: Install runtime dependencies**
 
 Run:
+
 ```bash
 pnpm add zustand @react-navigation/drawer react-native-earl-gamepad
 ```
@@ -39,6 +41,7 @@ git commit -m "feat: install zustand, drawer navigator, and earl-gamepad"
 ### Task 2: Configure orientation and app settings
 
 **Files:**
+
 - Modify: `app.json`
 
 **Step 1: Update app.json**
@@ -131,6 +134,7 @@ git commit -m "feat: configure responsive orientation and dark-only theme"
 ### Task 3: Define platform constants and accent color system
 
 **Files:**
+
 - Create: `constants/platforms.ts`
 - Modify: `constants/theme.ts`
 
@@ -147,16 +151,86 @@ export interface Platform {
 }
 
 export const PLATFORMS: Platform[] = [
-  { id: 'ps2', rawgId: 15, name: 'PlayStation 2', shortName: 'PS2', accent: '#003791', manufacturer: 'sony' },
-  { id: 'ps1', rawgId: 27, name: 'PlayStation', shortName: 'PS1', accent: '#003791', manufacturer: 'sony' },
-  { id: 'gamecube', rawgId: 105, name: 'GameCube', shortName: 'GCN', accent: '#6A0DAD', manufacturer: 'nintendo' },
-  { id: 'n64', rawgId: 83, name: 'Nintendo 64', shortName: 'N64', accent: '#E60012', manufacturer: 'nintendo' },
-  { id: 'snes', rawgId: 79, name: 'Super Nintendo', shortName: 'SNES', accent: '#E60012', manufacturer: 'nintendo' },
-  { id: 'nes', rawgId: 49, name: 'Nintendo Entertainment System', shortName: 'NES', accent: '#E60012', manufacturer: 'nintendo' },
-  { id: 'gba', rawgId: 24, name: 'Game Boy Advance', shortName: 'GBA', accent: '#E60012', manufacturer: 'nintendo' },
-  { id: 'megadrive', rawgId: 167, name: 'Mega Drive / Genesis', shortName: 'MD', accent: '#0060A8', manufacturer: 'sega' },
-  { id: 'saturn', rawgId: 107, name: 'Sega Saturn', shortName: 'SAT', accent: '#0060A8', manufacturer: 'sega' },
-  { id: 'dreamcast', rawgId: 106, name: 'Sega Dreamcast', shortName: 'DC', accent: '#0060A8', manufacturer: 'sega' },
+  {
+    id: 'ps2',
+    rawgId: 15,
+    name: 'PlayStation 2',
+    shortName: 'PS2',
+    accent: '#003791',
+    manufacturer: 'sony',
+  },
+  {
+    id: 'ps1',
+    rawgId: 27,
+    name: 'PlayStation',
+    shortName: 'PS1',
+    accent: '#003791',
+    manufacturer: 'sony',
+  },
+  {
+    id: 'gamecube',
+    rawgId: 105,
+    name: 'GameCube',
+    shortName: 'GCN',
+    accent: '#6A0DAD',
+    manufacturer: 'nintendo',
+  },
+  {
+    id: 'n64',
+    rawgId: 83,
+    name: 'Nintendo 64',
+    shortName: 'N64',
+    accent: '#E60012',
+    manufacturer: 'nintendo',
+  },
+  {
+    id: 'snes',
+    rawgId: 79,
+    name: 'Super Nintendo',
+    shortName: 'SNES',
+    accent: '#E60012',
+    manufacturer: 'nintendo',
+  },
+  {
+    id: 'nes',
+    rawgId: 49,
+    name: 'Nintendo Entertainment System',
+    shortName: 'NES',
+    accent: '#E60012',
+    manufacturer: 'nintendo',
+  },
+  {
+    id: 'gba',
+    rawgId: 24,
+    name: 'Game Boy Advance',
+    shortName: 'GBA',
+    accent: '#E60012',
+    manufacturer: 'nintendo',
+  },
+  {
+    id: 'megadrive',
+    rawgId: 167,
+    name: 'Mega Drive / Genesis',
+    shortName: 'MD',
+    accent: '#0060A8',
+    manufacturer: 'sega',
+  },
+  {
+    id: 'saturn',
+    rawgId: 107,
+    name: 'Sega Saturn',
+    shortName: 'SAT',
+    accent: '#0060A8',
+    manufacturer: 'sega',
+  },
+  {
+    id: 'dreamcast',
+    rawgId: 106,
+    name: 'Sega Dreamcast',
+    shortName: 'DC',
+    accent: '#0060A8',
+    manufacturer: 'sega',
+  },
 ];
 
 export const PLATFORM_MAP = Object.fromEntries(PLATFORMS.map((p) => [p.id, p]));
@@ -211,6 +285,7 @@ git commit -m "feat: add platform constants, accent colors, and dark theme"
 This replaces the existing tab-based navigation with a drawer layout.
 
 **Files:**
+
 - Modify: `app/_layout.tsx`
 - Create: `app/(drawer)/_layout.tsx`
 - Create: `app/(drawer)/index.tsx`
@@ -299,6 +374,7 @@ export default function RootLayout() {
 **Step 3: Create placeholder screens**
 
 `app/(drawer)/index.tsx`:
+
 ```typescript
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
@@ -315,6 +391,7 @@ export default function HomeScreen() {
 ```
 
 `app/(drawer)/browse.tsx`:
+
 ```typescript
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
@@ -331,6 +408,7 @@ export default function BrowseScreen() {
 ```
 
 `app/(drawer)/backlog.tsx`:
+
 ```typescript
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
@@ -347,6 +425,7 @@ export default function BacklogScreen() {
 ```
 
 `app/(drawer)/settings.tsx`:
+
 ```typescript
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
@@ -363,6 +442,7 @@ export default function SettingsScreen() {
 ```
 
 `app/game/[id].tsx`:
+
 ```typescript
 import { useLocalSearchParams } from 'expo-router';
 import { Box } from '@/components/ui/box';
@@ -401,6 +481,7 @@ git commit -m "feat: replace tab navigation with responsive drawer layout"
 ### Task 5: Set up SQLite schema and database service
 
 **Files:**
+
 - Create: `services/database.ts`
 - Modify: `app/_layout.tsx` (add SQLiteProvider)
 
@@ -505,29 +586,40 @@ export interface Screenshot {
 export async function getGamesByPlatform(
   db: SQLiteDatabase,
   platform: string,
-  vibeFilter?: 'essential' | 'hidden_gem'
+  vibeFilter?: 'essential' | 'hidden_gem',
 ): Promise<Game[]> {
   if (vibeFilter) {
     return db.getAllAsync<Game>(
       'SELECT * FROM games WHERE platform = ? AND curated_vibe = ? ORDER BY metacritic DESC',
-      [platform, vibeFilter]
+      [platform, vibeFilter],
     );
   }
   return db.getAllAsync<Game>(
     'SELECT * FROM games WHERE platform = ? ORDER BY metacritic DESC',
-    [platform]
+    [platform],
   );
 }
 
-export async function getGameById(db: SQLiteDatabase, id: string): Promise<Game | null> {
+export async function getGameById(
+  db: SQLiteDatabase,
+  id: string,
+): Promise<Game | null> {
   return db.getFirstAsync<Game>('SELECT * FROM games WHERE id = ?', [id]);
 }
 
-export async function getGameByRawgSlug(db: SQLiteDatabase, slug: string): Promise<Game | null> {
-  return db.getFirstAsync<Game>('SELECT * FROM games WHERE rawg_slug = ?', [slug]);
+export async function getGameByRawgSlug(
+  db: SQLiteDatabase,
+  slug: string,
+): Promise<Game | null> {
+  return db.getFirstAsync<Game>('SELECT * FROM games WHERE rawg_slug = ?', [
+    slug,
+  ]);
 }
 
-export async function insertGame(db: SQLiteDatabase, game: Omit<Game, 'created_at'>): Promise<void> {
+export async function insertGame(
+  db: SQLiteDatabase,
+  game: Omit<Game, 'created_at'>,
+): Promise<void> {
   await db.runAsync(
     `INSERT OR REPLACE INTO games (
       id, rawg_id, rawg_slug, title, platform, genre, curated_vibe, curated_desc,
@@ -535,35 +627,64 @@ export async function insertGame(db: SQLiteDatabase, game: Omit<Game, 'created_a
       description, playtime, esrb_rating, website, metacritic_url, backlog_status, last_enriched
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      game.id, game.rawg_id, game.rawg_slug, game.title, game.platform, game.genre,
-      game.curated_vibe, game.curated_desc, game.metacritic, game.rawg_rating,
-      game.release_date, game.background_image, game.developer, game.publisher,
-      game.description, game.playtime, game.esrb_rating, game.website,
-      game.metacritic_url, game.backlog_status, game.last_enriched,
-    ]
+      game.id,
+      game.rawg_id,
+      game.rawg_slug,
+      game.title,
+      game.platform,
+      game.genre,
+      game.curated_vibe,
+      game.curated_desc,
+      game.metacritic,
+      game.rawg_rating,
+      game.release_date,
+      game.background_image,
+      game.developer,
+      game.publisher,
+      game.description,
+      game.playtime,
+      game.esrb_rating,
+      game.website,
+      game.metacritic_url,
+      game.backlog_status,
+      game.last_enriched,
+    ],
   );
 }
 
 export async function updateBacklogStatus(
   db: SQLiteDatabase,
   gameId: string,
-  status: string
+  status: string,
 ): Promise<void> {
-  await db.runAsync('UPDATE games SET backlog_status = ? WHERE id = ?', [status, gameId]);
+  await db.runAsync('UPDATE games SET backlog_status = ? WHERE id = ?', [
+    status,
+    gameId,
+  ]);
 }
 
 export async function updateGameEnrichment(
   db: SQLiteDatabase,
   gameId: string,
-  data: Partial<Game>
+  data: Partial<Game>,
 ): Promise<void> {
   const fields: string[] = [];
   const values: unknown[] = [];
 
   const enrichableFields = [
-    'metacritic', 'rawg_rating', 'release_date', 'background_image',
-    'developer', 'publisher', 'description', 'playtime', 'esrb_rating',
-    'website', 'metacritic_url', 'rawg_id', 'genre',
+    'metacritic',
+    'rawg_rating',
+    'release_date',
+    'background_image',
+    'developer',
+    'publisher',
+    'description',
+    'playtime',
+    'esrb_rating',
+    'website',
+    'metacritic_url',
+    'rawg_id',
+    'genre',
   ] as const;
 
   for (const field of enrichableFields) {
@@ -576,13 +697,16 @@ export async function updateGameEnrichment(
   fields.push("last_enriched = datetime('now')");
   values.push(gameId);
 
-  await db.runAsync(`UPDATE games SET ${fields.join(', ')} WHERE id = ?`, values);
+  await db.runAsync(
+    `UPDATE games SET ${fields.join(', ')} WHERE id = ?`,
+    values,
+  );
 }
 
 export async function getBacklogGames(
   db: SQLiteDatabase,
   status?: string,
-  platform?: string
+  platform?: string,
 ): Promise<Game[]> {
   let query = "SELECT * FROM games WHERE backlog_status != 'none'";
   const params: string[] = [];
@@ -608,9 +732,15 @@ export async function getBacklogStats(db: SQLiteDatabase): Promise<{
   dropped: number;
 }> {
   const rows = await db.getAllAsync<{ backlog_status: string; count: number }>(
-    "SELECT backlog_status, COUNT(*) as count FROM games WHERE backlog_status != 'none' GROUP BY backlog_status"
+    "SELECT backlog_status, COUNT(*) as count FROM games WHERE backlog_status != 'none' GROUP BY backlog_status",
   );
-  const stats = { total: 0, want_to_play: 0, playing: 0, completed: 0, dropped: 0 };
+  const stats = {
+    total: 0,
+    want_to_play: 0,
+    playing: 0,
+    completed: 0,
+    dropped: 0,
+  };
   for (const row of rows) {
     const key = row.backlog_status as keyof typeof stats;
     if (key in stats) stats[key] = row.count;
@@ -619,34 +749,45 @@ export async function getBacklogStats(db: SQLiteDatabase): Promise<{
   return stats;
 }
 
-export async function getGamesNeedingEnrichment(db: SQLiteDatabase): Promise<Game[]> {
+export async function getGamesNeedingEnrichment(
+  db: SQLiteDatabase,
+): Promise<Game[]> {
   return db.getAllAsync<Game>(
     `SELECT * FROM games
      WHERE rawg_slug IS NOT NULL
      AND (last_enriched IS NULL OR datetime(last_enriched, '+7 days') < datetime('now'))
-     LIMIT 10`
+     LIMIT 10`,
   );
 }
 
 // --- Screenshot CRUD ---
 
-export async function getScreenshots(db: SQLiteDatabase, gameId: string): Promise<Screenshot[]> {
+export async function getScreenshots(
+  db: SQLiteDatabase,
+  gameId: string,
+): Promise<Screenshot[]> {
   return db.getAllAsync<Screenshot>(
     'SELECT * FROM screenshots WHERE game_id = ?',
-    [gameId]
+    [gameId],
   );
 }
 
-export async function insertScreenshots(db: SQLiteDatabase, screenshots: Screenshot[]): Promise<void> {
+export async function insertScreenshots(
+  db: SQLiteDatabase,
+  screenshots: Screenshot[],
+): Promise<void> {
   for (const s of screenshots) {
     await db.runAsync(
       'INSERT OR REPLACE INTO screenshots (id, game_id, image_url, width, height) VALUES (?, ?, ?, ?, ?)',
-      [s.id, s.game_id, s.image_url, s.width, s.height]
+      [s.id, s.game_id, s.image_url, s.width, s.height],
     );
   }
 }
 
-export async function deleteScreenshotsByGame(db: SQLiteDatabase, gameId: string): Promise<void> {
+export async function deleteScreenshotsByGame(
+  db: SQLiteDatabase,
+  gameId: string,
+): Promise<void> {
   await db.runAsync('DELETE FROM screenshots WHERE game_id = ?', [gameId]);
 }
 ```
@@ -705,6 +846,7 @@ git commit -m "feat: add SQLite schema, migration, and CRUD service layer"
 ### Task 6: Create RAWG API service
 
 **Files:**
+
 - Create: `services/rawg.ts`
 - Create: `.env` (if not exists — will be gitignored)
 - Modify: `.gitignore` (ensure .env is listed)
@@ -720,7 +862,10 @@ function getApiKey(): string {
   return key;
 }
 
-function buildUrl(path: string, params: Record<string, string | number | undefined> = {}): string {
+function buildUrl(
+  path: string,
+  params: Record<string, string | number | undefined> = {},
+): string {
   const url = new URL(`${BASE_URL}${path}`);
   url.searchParams.set('key', getApiKey());
   for (const [key, value] of Object.entries(params)) {
@@ -781,7 +926,7 @@ export async function searchGames(
     metacritic?: string;
     page_size?: number;
     page?: number;
-  } = {}
+  } = {},
 ): Promise<RawgPaginatedResponse<RawgGame>> {
   const url = buildUrl('/games', {
     search: query,
@@ -805,7 +950,7 @@ export async function getTopGames(
     metacritic?: string;
     page_size?: number;
     page?: number;
-  } = {}
+  } = {},
 ): Promise<RawgPaginatedResponse<RawgGame>> {
   const url = buildUrl('/games', {
     platforms: platformId,
@@ -820,7 +965,9 @@ export async function getTopGames(
   return res.json();
 }
 
-export async function getGameDetails(idOrSlug: number | string): Promise<RawgGame> {
+export async function getGameDetails(
+  idOrSlug: number | string,
+): Promise<RawgGame> {
   const url = buildUrl(`/games/${idOrSlug}`);
   const res = await fetch(url);
   if (!res.ok) throw new Error(`RAWG API error: ${res.status}`);
@@ -828,7 +975,7 @@ export async function getGameDetails(idOrSlug: number | string): Promise<RawgGam
 }
 
 export async function getGameScreenshots(
-  gameId: number
+  gameId: number,
 ): Promise<RawgPaginatedResponse<RawgScreenshot>> {
   const url = buildUrl(`/games/${gameId}/screenshots`);
   const res = await fetch(url);
@@ -836,7 +983,9 @@ export async function getGameScreenshots(
   return res.json();
 }
 
-export async function getPlatforms(): Promise<RawgPaginatedResponse<RawgPlatform>> {
+export async function getPlatforms(): Promise<
+  RawgPaginatedResponse<RawgPlatform>
+> {
   const url = buildUrl('/platforms', { page_size: 50 });
   const res = await fetch(url);
   if (!res.ok) throw new Error(`RAWG API error: ${res.status}`);
@@ -866,6 +1015,7 @@ git commit -m "feat: add RAWG API service with search, details, and screenshots"
 ### Task 7: Create Zustand UI store
 
 **Files:**
+
 - Create: `stores/ui.ts`
 
 **Step 1: Create `stores/ui.ts`**
@@ -874,7 +1024,12 @@ git commit -m "feat: add RAWG API service with search, details, and screenshots"
 import { create } from 'zustand';
 import type { RawgGame } from '@/services/rawg';
 
-export type BacklogStatus = 'none' | 'want_to_play' | 'playing' | 'completed' | 'dropped';
+export type BacklogStatus =
+  | 'none'
+  | 'want_to_play'
+  | 'playing'
+  | 'completed'
+  | 'dropped';
 
 export const BACKLOG_STATUSES: { value: BacklogStatus; label: string }[] = [
   { value: 'want_to_play', label: 'Want to Play' },
@@ -932,7 +1087,8 @@ export const useUIStore = create<UIState>()((set) => ({
   backlogStatusFilter: null,
   setBacklogStatusFilter: (status) => set({ backlogStatusFilter: status }),
   backlogPlatformFilter: null,
-  setBacklogPlatformFilter: (platform) => set({ backlogPlatformFilter: platform }),
+  setBacklogPlatformFilter: (platform) =>
+    set({ backlogPlatformFilter: platform }),
 
   // Loading
   loading: {},
@@ -959,6 +1115,7 @@ git commit -m "feat: add Zustand UI store for transient app state"
 Reusable components used across multiple screens.
 
 **Files:**
+
 - Create: `components/game-card.tsx`
 - Create: `components/metacritic-badge.tsx`
 - Create: `components/system-selector.tsx`
@@ -1136,6 +1293,7 @@ git commit -m "feat: add shared UI components (game card, metacritic badge, syst
 ### Task 9: Build the Home screen
 
 **Files:**
+
 - Modify: `app/(drawer)/index.tsx`
 
 **Step 1: Implement the Home screen**
@@ -1211,6 +1369,7 @@ git commit -m "feat: implement home screen with system selector and game grid"
 ### Task 10: Build the Game Detail screen
 
 **Files:**
+
 - Modify: `app/game/[id].tsx`
 
 **Step 1: Implement the two-panel Game Detail screen**
@@ -1437,6 +1596,7 @@ git commit -m "feat: implement two-panel game detail screen with backlog status"
 ### Task 11: Build the Browse screen
 
 **Files:**
+
 - Modify: `app/(drawer)/browse.tsx`
 
 **Step 1: Implement the Browse screen**
@@ -1665,6 +1825,7 @@ git commit -m "feat: implement browse screen with search, filters, and add-to-ba
 ### Task 12: Build the Backlog screen
 
 **Files:**
+
 - Modify: `app/(drawer)/backlog.tsx`
 
 **Step 1: Implement the Backlog screen**
@@ -1840,6 +2001,7 @@ git commit -m "feat: implement backlog screen with status management and stats"
 ### Task 13: Set up gamepad input with react-native-earl-gamepad
 
 **Files:**
+
 - Create: `providers/gamepad-provider.tsx`
 - Create: `hooks/use-gamepad-navigation.ts`
 - Modify: `app/_layout.tsx` (add GamepadProvider)
@@ -1930,7 +2092,12 @@ interface FocusGridOptions {
   onFocusChange?: (row: number, col: number) => void;
 }
 
-export function useFocusGrid({ rows, columns, onSelect, onFocusChange }: FocusGridOptions) {
+export function useFocusGrid({
+  rows,
+  columns,
+  onSelect,
+  onFocusChange,
+}: FocusGridOptions) {
   const focusRow = useRef(0);
   const focusCol = useRef(0);
 
@@ -1943,7 +2110,8 @@ export function useFocusGrid({ rows, columns, onSelect, onFocusChange }: FocusGr
       if (event.direction === 'up') newRow = Math.max(0, newRow - 1);
       if (event.direction === 'down') newRow = Math.min(rows - 1, newRow + 1);
       if (event.direction === 'left') newCol = Math.max(0, newCol - 1);
-      if (event.direction === 'right') newCol = Math.min(columns - 1, newCol + 1);
+      if (event.direction === 'right')
+        newCol = Math.min(columns - 1, newCol + 1);
 
       if (newRow !== focusRow.current || newCol !== focusCol.current) {
         focusRow.current = newRow;
@@ -1960,7 +2128,7 @@ export function useFocusGrid({ rows, columns, onSelect, onFocusChange }: FocusGr
 
   const getFocusIndex = useCallback(
     () => focusRow.current * columns + focusCol.current,
-    [columns]
+    [columns],
   );
 
   return { focusRow, focusCol, getFocusIndex };
@@ -2011,6 +2179,7 @@ export default function RootLayout() {
 **Step 4: Verify gamepad works**
 
 Connect a Bluetooth gamepad or use the Odin 3's built-in controls. Confirm:
+
 - B button navigates back
 - L1/R1 switch drawer tabs
 - No crashes when gamepad is not connected
@@ -2027,6 +2196,7 @@ git commit -m "feat: add gamepad provider and focus grid navigation hook"
 ### Task 14: Build the background enrichment pipeline
 
 **Files:**
+
 - Create: `hooks/use-enrichment.ts`
 - Modify: `app/_layout.tsx` (add enrichment trigger)
 
@@ -2089,7 +2259,7 @@ export function useEnrichment() {
                   image_url: s.image,
                   width: s.width,
                   height: s.height,
-                }))
+                })),
               );
             }
 
@@ -2189,6 +2359,7 @@ git commit -m "feat: add background enrichment pipeline for RAWG data"
 ### Task 15: Build the Settings screen
 
 **Files:**
+
 - Modify: `app/(drawer)/settings.tsx`
 
 **Step 1: Implement the Settings screen**
@@ -2320,6 +2491,7 @@ git commit -m "feat: implement settings screen with attribution, accent color, a
 ### Task 16: Update CLAUDE.md with new architecture
 
 **Files:**
+
 - Modify: `CLAUDE.md`
 
 **Step 1: Update CLAUDE.md**
@@ -2337,21 +2509,21 @@ git commit -m "docs: update CLAUDE.md with full app architecture"
 
 ## Summary
 
-| Task | Description | New Dependencies |
-|------|-------------|-----------------|
-| 1 | Install deps | zustand, @react-navigation/drawer, react-native-earl-gamepad |
-| 2 | Orientation + dark theme config | — |
-| 3 | Platform constants + accent colors | — |
-| 4 | Drawer navigation | — |
-| 5 | SQLite schema + CRUD service | — |
-| 6 | RAWG API service | — |
-| 7 | Zustand UI store | — |
-| 8 | Shared UI components (card, badge, grid, selector) | — |
-| 9 | Home screen | — |
-| 10 | Game Detail screen | — |
-| 11 | Browse screen | expo-crypto (built-in) |
-| 12 | Backlog screen | — |
-| 13 | Gamepad input + focus system | — |
-| 14 | Background enrichment pipeline | — |
-| 15 | Settings screen | — |
-| 16 | Update CLAUDE.md | — |
+| Task | Description                                        | New Dependencies                                             |
+| ---- | -------------------------------------------------- | ------------------------------------------------------------ |
+| 1    | Install deps                                       | zustand, @react-navigation/drawer, react-native-earl-gamepad |
+| 2    | Orientation + dark theme config                    | —                                                            |
+| 3    | Platform constants + accent colors                 | —                                                            |
+| 4    | Drawer navigation                                  | —                                                            |
+| 5    | SQLite schema + CRUD service                       | —                                                            |
+| 6    | RAWG API service                                   | —                                                            |
+| 7    | Zustand UI store                                   | —                                                            |
+| 8    | Shared UI components (card, badge, grid, selector) | —                                                            |
+| 9    | Home screen                                        | —                                                            |
+| 10   | Game Detail screen                                 | —                                                            |
+| 11   | Browse screen                                      | expo-crypto (built-in)                                       |
+| 12   | Backlog screen                                     | —                                                            |
+| 13   | Gamepad input + focus system                       | —                                                            |
+| 14   | Background enrichment pipeline                     | —                                                            |
+| 15   | Settings screen                                    | —                                                            |
+| 16   | Update CLAUDE.md                                   | —                                                            |

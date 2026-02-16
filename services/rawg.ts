@@ -1,7 +1,8 @@
 import { PLATFORMS } from '@/constants/platforms';
 
 const RAWG_BASE_URL = 'https://api.rawg.io/api';
-const DEFAULT_PROXY_URL = 'https://ghexjephfeibvsfmttoz.supabase.co/functions/v1/rawg-proxy';
+const DEFAULT_PROXY_URL =
+  'https://ghexjephfeibvsfmttoz.supabase.co/functions/v1/rawg-proxy';
 
 function getApiKey(): string | undefined {
   return process.env.EXPO_PUBLIC_RAWG_API_KEY;
@@ -13,14 +14,17 @@ function getProxyUrl(): string | undefined {
   return envUrl || DEFAULT_PROXY_URL;
 }
 
-function buildUrl(path: string, params: Record<string, string | number | undefined> = {}): string {
+function buildUrl(
+  path: string,
+  params: Record<string, string | number | undefined> = {},
+): string {
   // If we have a proxy (default or env), use it. Otherwise fallback to direct RAWG.
   const proxyUrl = getProxyUrl();
   const isUsingProxy = !!proxyUrl;
   const base = proxyUrl || RAWG_BASE_URL;
-  
+
   const url = new URL(`${base}${path}`);
-  
+
   // Only add key if calling RAWG directly
   if (!isUsingProxy) {
     const key = getApiKey();
@@ -96,7 +100,7 @@ export async function searchGames(
     metacritic?: string;
     page_size?: number;
     page?: number;
-  } = {}
+  } = {},
 ): Promise<RawgPaginatedResponse<RawgGame>> {
   const url = buildUrl('/games', {
     search: query,
@@ -120,7 +124,7 @@ export async function getTopGames(
     metacritic?: string;
     page_size?: number;
     page?: number;
-  } = {}
+  } = {},
 ): Promise<RawgPaginatedResponse<RawgGame>> {
   const url = buildUrl('/games', {
     platforms: platformId,
@@ -135,7 +139,9 @@ export async function getTopGames(
   return res.json();
 }
 
-export async function getGameDetails(idOrSlug: number | string): Promise<RawgGame> {
+export async function getGameDetails(
+  idOrSlug: number | string,
+): Promise<RawgGame> {
   const url = buildUrl(`/games/${idOrSlug}`);
   const res = await fetch(url);
   if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);
@@ -143,7 +149,7 @@ export async function getGameDetails(idOrSlug: number | string): Promise<RawgGam
 }
 
 export async function getGameScreenshots(
-  gameId: number
+  gameId: number,
 ): Promise<RawgPaginatedResponse<RawgScreenshot>> {
   const url = buildUrl(`/games/${gameId}/screenshots`);
   const res = await fetch(url);
@@ -152,7 +158,7 @@ export async function getGameScreenshots(
 }
 
 export async function getTopRetroGames(
-  options: { page_size?: number; page?: number } = {}
+  options: { page_size?: number; page?: number } = {},
 ): Promise<RawgPaginatedResponse<RawgGame>> {
   const allPlatformIds = PLATFORMS.map((p) => p.rawgId).join(',');
   const url = buildUrl('/games', {
@@ -167,7 +173,9 @@ export async function getTopRetroGames(
   return res.json();
 }
 
-export async function getPlatforms(): Promise<RawgPaginatedResponse<RawgPlatform>> {
+export async function getPlatforms(): Promise<
+  RawgPaginatedResponse<RawgPlatform>
+> {
   const url = buildUrl('/platforms', { page_size: 50 });
   const res = await fetch(url);
   if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);

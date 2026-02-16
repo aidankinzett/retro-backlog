@@ -1,8 +1,17 @@
 import { create } from 'zustand';
 
-export type BacklogStatus = 'none' | 'want_to_play' | 'playing' | 'completed' | 'dropped';
+export type BacklogStatus =
+  | 'none'
+  | 'want_to_play'
+  | 'playing'
+  | 'completed'
+  | 'dropped';
 
-export const BACKLOG_STATUSES: { value: BacklogStatus; label: string; shortLabel: string }[] = [
+export const BACKLOG_STATUSES: {
+  value: BacklogStatus;
+  label: string;
+  shortLabel: string;
+}[] = [
   { value: 'want_to_play', label: 'Want to Play', shortLabel: 'Wishlist' },
   { value: 'playing', label: 'Playing', shortLabel: 'Playing' },
   { value: 'completed', label: 'Completed', shortLabel: 'Done' },
@@ -42,7 +51,8 @@ export const useUIStore = create<UIState>()((set) => ({
   backlogStatusFilter: null,
   setBacklogStatusFilter: (status) => set({ backlogStatusFilter: status }),
   backlogPlatformFilter: null,
-  setBacklogPlatformFilter: (platform) => set({ backlogPlatformFilter: platform }),
+  setBacklogPlatformFilter: (platform) =>
+    set({ backlogPlatformFilter: platform }),
 
   // Accent
   accentOverride: null,

@@ -71,7 +71,10 @@ describe('enrichGame', () => {
       playtime: 0,
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 0, next: null, previous: null, results: [],
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     });
 
     await enrichGame(db, baseGame);
@@ -91,7 +94,10 @@ describe('enrichGame', () => {
       playtime: 0,
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 0, next: null, previous: null, results: [],
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     });
 
     await enrichGame(db, game);
@@ -117,7 +123,10 @@ describe('enrichGame', () => {
       metacritic_url: 'https://metacritic.com/game',
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 0, next: null, previous: null, results: [],
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     });
 
     await enrichGame(db, baseGame);
@@ -141,11 +150,19 @@ describe('enrichGame', () => {
 
   it('replaces screenshots when details.id exists', async () => {
     vi.mocked(rawg.getGameDetails).mockResolvedValue({
-      id: 123, slug: 'test', name: 'Test', released: null,
-      background_image: null, metacritic: null, rating: 0, playtime: 0,
+      id: 123,
+      slug: 'test',
+      name: 'Test',
+      released: null,
+      background_image: null,
+      metacritic: null,
+      rating: 0,
+      playtime: 0,
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 2, next: null, previous: null,
+      count: 2,
+      next: null,
+      previous: null,
       results: [
         { id: 1, image: 'https://img.com/1.jpg', width: 1920, height: 1080 },
         { id: 2, image: 'https://img.com/2.jpg', width: 1920, height: 1080 },
@@ -156,31 +173,60 @@ describe('enrichGame', () => {
 
     expect(database.deleteScreenshotsByGame).toHaveBeenCalledWith(db, 'game-1');
     expect(database.insertScreenshots).toHaveBeenCalledWith(db, [
-      { id: '1', game_id: 'game-1', image_url: 'https://img.com/1.jpg', width: 1920, height: 1080 },
-      { id: '2', game_id: 'game-1', image_url: 'https://img.com/2.jpg', width: 1920, height: 1080 },
+      {
+        id: '1',
+        game_id: 'game-1',
+        image_url: 'https://img.com/1.jpg',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        id: '2',
+        game_id: 'game-1',
+        image_url: 'https://img.com/2.jpg',
+        width: 1920,
+        height: 1080,
+      },
     ]);
   });
 
   it('handles null optional fields gracefully', async () => {
     vi.mocked(rawg.getGameDetails).mockResolvedValue({
-      id: 123, slug: 'test', name: 'Test', released: null,
-      background_image: null, metacritic: null, rating: 0, playtime: 0,
-      developers: [], publishers: [], genres: [],
-      esrb_rating: null, website: undefined, metacritic_url: undefined,
+      id: 123,
+      slug: 'test',
+      name: 'Test',
+      released: null,
+      background_image: null,
+      metacritic: null,
+      rating: 0,
+      playtime: 0,
+      developers: [],
+      publishers: [],
+      genres: [],
+      esrb_rating: null,
+      website: undefined,
+      metacritic_url: undefined,
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 0, next: null, previous: null, results: [],
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     });
 
     await enrichGame(db, baseGame);
 
-    expect(database.updateGameEnrichment).toHaveBeenCalledWith(db, 'game-1', expect.objectContaining({
-      developer: null,
-      publisher: null,
-      esrb_rating: null,
-      website: null,
-      metacritic_url: null,
-      genre: null,
-    }));
+    expect(database.updateGameEnrichment).toHaveBeenCalledWith(
+      db,
+      'game-1',
+      expect.objectContaining({
+        developer: null,
+        publisher: null,
+        esrb_rating: null,
+        website: null,
+        metacritic_url: null,
+        genre: null,
+      }),
+    );
   });
 });

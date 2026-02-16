@@ -13,11 +13,13 @@
 ### Task 1: Install Dependencies
 
 **Files:**
+
 - Modify: `package.json`
 
 **Step 1: Install dev dependencies**
 
 Run:
+
 ```bash
 pnpm add -D vitest @testing-library/react-native @testing-library/jest-dom jsdom
 ```
@@ -46,6 +48,7 @@ git commit -m "chore: add vitest and testing-library dependencies"
 ### Task 2: Create Vitest Configuration
 
 **Files:**
+
 - Create: `vitest.config.ts`
 
 **Step 1: Write vitest.config.ts**
@@ -59,7 +62,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
     globals: true,
-    include: ['**/__tests__/**/*.{test,spec}.{ts,tsx}', '**/*.{test,spec}.{ts,tsx}'],
+    include: [
+      '**/__tests__/**/*.{test,spec}.{ts,tsx}',
+      '**/*.{test,spec}.{ts,tsx}',
+    ],
     exclude: ['node_modules', '.expo', 'android', 'ios'],
     css: false,
     testTimeout: 10000,
@@ -72,11 +78,7 @@ export default defineConfig({
         'components/**',
         'constants/**',
       ],
-      exclude: [
-        'components/ui/**',
-        '**/*.d.ts',
-        'app/**',
-      ],
+      exclude: ['components/ui/**', '**/*.d.ts', 'app/**'],
     },
   },
   resolve: {
@@ -91,6 +93,7 @@ export default defineConfig({
 ```
 
 Key decisions:
+
 - `react-native` aliased to `react-native-web` because Vitest runs in JSDOM, not on device.
 - `.web.tsx` extension priority so Gluestack UI web variants resolve correctly.
 - `css: false` because NativeWind Babel plugin doesn't run under Vite — className passes through as-is.
@@ -108,6 +111,7 @@ git commit -m "chore: add vitest configuration"
 ### Task 3: Create Global Test Setup (Expo/RN Mocks)
 
 **Files:**
+
 - Create: `test/setup.ts`
 
 **Step 1: Create the setup file**
@@ -166,7 +170,9 @@ vi.mock('expo-router', () => ({
 }));
 
 vi.mock('expo-crypto', () => ({
-  randomUUID: vi.fn(() => 'test-uuid-' + Math.random().toString(36).substr(2, 9)),
+  randomUUID: vi.fn(
+    () => 'test-uuid-' + Math.random().toString(36).substr(2, 9),
+  ),
 }));
 
 vi.mock('expo-image', () => ({
@@ -185,7 +191,11 @@ vi.mock('expo-haptics', () => ({
   notificationAsync: vi.fn(),
   selectionAsync: vi.fn(),
   ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
-  NotificationFeedbackType: { Success: 'success', Warning: 'warning', Error: 'error' },
+  NotificationFeedbackType: {
+    Success: 'success',
+    Warning: 'warning',
+    Error: 'error',
+  },
 }));
 
 vi.mock('expo-constants', () => ({
@@ -239,7 +249,12 @@ vi.mock('react-native-reanimated', () => ({
 }));
 
 vi.mock('react-native-gesture-handler', () => {
-  const { View, TouchableOpacity, ScrollView, FlatList } = require('react-native-web');
+  const {
+    View,
+    TouchableOpacity,
+    ScrollView,
+    FlatList,
+  } = require('react-native-web');
   return {
     GestureHandlerRootView: View,
     Swipeable: View,
@@ -388,6 +403,7 @@ git commit -m "chore: add vitest global test setup with Expo/RN mocks"
 ### Task 4: Create Shared Test Utilities
 
 **Files:**
+
 - Create: `test/test-utils.tsx`
 
 **Step 1: Write the test utilities file**
@@ -444,6 +460,7 @@ git commit -m "chore: add shared test utilities with QueryClient wrapper"
 ### Task 5: Test Pure Functions — constants/theme.ts
 
 **Files:**
+
 - Create: `constants/__tests__/theme.test.ts`
 - Test target: `constants/theme.ts` — `getMetacriticColor()` function
 
@@ -493,6 +510,7 @@ git commit -m "test: add unit tests for getMetacriticColor"
 ### Task 6: Test Pure Functions — constants/platforms.ts
 
 **Files:**
+
 - Create: `constants/__tests__/platforms.test.ts`
 - Test target: `constants/platforms.ts` — `getPlatformAccent()`, `PLATFORM_MAP`, `PLATFORMS`
 
@@ -500,7 +518,11 @@ git commit -m "test: add unit tests for getMetacriticColor"
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { PLATFORMS, PLATFORM_MAP, getPlatformAccent } from '@/constants/platforms';
+import {
+  PLATFORMS,
+  PLATFORM_MAP,
+  getPlatformAccent,
+} from '@/constants/platforms';
 
 describe('platforms', () => {
   it('has 10 platforms defined', () => {
@@ -554,6 +576,7 @@ git commit -m "test: add unit tests for platforms constants"
 ### Task 7: Test Zustand Store — stores/ui.ts
 
 **Files:**
+
 - Create: `stores/__tests__/ui.test.ts`
 - Test target: `stores/ui.ts` — `useUIStore` initial state and all setters
 
@@ -665,6 +688,7 @@ git commit -m "test: add unit tests for UI Zustand store"
 ### Task 8: Test Database Service — services/database.ts
 
 **Files:**
+
 - Create: `services/__tests__/database.test.ts`
 - Test target: `services/database.ts` — migration logic, query building, stats aggregation
 
@@ -703,7 +727,9 @@ function createMockDb(): SQLiteDatabase {
 
 describe('migrateDbIfNeeded', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('skips migration when version is current', async () => {
     vi.mocked(db.getFirstAsync).mockResolvedValue({ user_version: 1 });
@@ -727,13 +753,15 @@ describe('migrateDbIfNeeded', () => {
 
 describe('getGamesByPlatform', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('queries by platform without vibe filter', async () => {
     await getGamesByPlatform(db, 'ps2');
     expect(db.getAllAsync).toHaveBeenCalledWith(
       expect.stringContaining('WHERE platform = ?'),
-      ['ps2']
+      ['ps2'],
     );
   });
 
@@ -741,20 +769,22 @@ describe('getGamesByPlatform', () => {
     await getGamesByPlatform(db, 'ps2', 'essential');
     expect(db.getAllAsync).toHaveBeenCalledWith(
       expect.stringContaining('AND curated_vibe = ?'),
-      ['ps2', 'essential']
+      ['ps2', 'essential'],
     );
   });
 });
 
 describe('getBacklogGames', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('queries all backlog games with no filters', async () => {
     await getBacklogGames(db);
     expect(db.getAllAsync).toHaveBeenCalledWith(
       expect.stringContaining("backlog_status != 'none'"),
-      []
+      [],
     );
   });
 
@@ -762,7 +792,7 @@ describe('getBacklogGames', () => {
     await getBacklogGames(db, 'playing');
     expect(db.getAllAsync).toHaveBeenCalledWith(
       expect.stringContaining('AND backlog_status = ?'),
-      ['playing']
+      ['playing'],
     );
   });
 
@@ -785,7 +815,9 @@ describe('getBacklogGames', () => {
 
 describe('getBacklogStats', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('aggregates stats correctly', async () => {
     vi.mocked(db.getAllAsync).mockResolvedValue([
@@ -833,7 +865,9 @@ describe('getBacklogStats', () => {
 
 describe('updateGameEnrichment', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('builds SET clause only for provided fields', async () => {
     await updateGameEnrichment(db, 'game-1', {
@@ -864,7 +898,9 @@ describe('updateGameEnrichment', () => {
 
 describe('insertScreenshots', () => {
   let db: SQLiteDatabase;
-  beforeEach(() => { db = createMockDb(); });
+  beforeEach(() => {
+    db = createMockDb();
+  });
 
   it('inserts each screenshot individually', async () => {
     await insertScreenshots(db, [
@@ -895,6 +931,7 @@ git commit -m "test: add unit tests for database service"
 ### Task 9: Test RAWG API Service — services/rawg.ts
 
 **Files:**
+
 - Create: `services/__tests__/rawg.test.ts`
 - Test target: `services/rawg.ts` — URL construction, error handling, default parameters
 
@@ -902,7 +939,13 @@ git commit -m "test: add unit tests for database service"
 
 ```typescript
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { searchGames, getTopGames, getGameDetails, getGameScreenshots, getPlatforms } from '@/services/rawg';
+import {
+  searchGames,
+  getTopGames,
+  getGameDetails,
+  getGameScreenshots,
+  getPlatforms,
+} from '@/services/rawg';
 
 vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
 
@@ -1012,7 +1055,9 @@ describe('error handling', () => {
 
   it('throws on 404', async () => {
     mockFetchError(404);
-    await expect(getGameDetails('nonexistent')).rejects.toThrow('RAWG API error: 404');
+    await expect(getGameDetails('nonexistent')).rejects.toThrow(
+      'RAWG API error: 404',
+    );
   });
 
   it('throws on 500', async () => {
@@ -1026,7 +1071,9 @@ describe('getApiKey', () => {
     vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', '');
     mockFetch(emptyPaginated);
 
-    await expect(searchGames('test')).rejects.toThrow('EXPO_PUBLIC_RAWG_API_KEY is not set');
+    await expect(searchGames('test')).rejects.toThrow(
+      'EXPO_PUBLIC_RAWG_API_KEY is not set',
+    );
 
     // Restore for other tests
     vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', 'test-api-key');
@@ -1052,6 +1099,7 @@ git commit -m "test: add unit tests for RAWG API service"
 ### Task 10: Test Enrichment Service — services/enrichment.ts
 
 **Files:**
+
 - Create: `services/__tests__/enrichment.test.ts`
 - Test target: `services/enrichment.ts` — `enrichGame()` data mapping and early returns
 
@@ -1131,7 +1179,10 @@ describe('enrichGame', () => {
       playtime: 0,
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 0, next: null, previous: null, results: [],
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     });
 
     await enrichGame(db, baseGame);
@@ -1151,7 +1202,10 @@ describe('enrichGame', () => {
       playtime: 0,
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 0, next: null, previous: null, results: [],
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     });
 
     await enrichGame(db, game);
@@ -1177,7 +1231,10 @@ describe('enrichGame', () => {
       metacritic_url: 'https://metacritic.com/game',
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 0, next: null, previous: null, results: [],
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     });
 
     await enrichGame(db, baseGame);
@@ -1201,11 +1258,19 @@ describe('enrichGame', () => {
 
   it('replaces screenshots when details.id exists', async () => {
     vi.mocked(rawg.getGameDetails).mockResolvedValue({
-      id: 123, slug: 'test', name: 'Test', released: null,
-      background_image: null, metacritic: null, rating: 0, playtime: 0,
+      id: 123,
+      slug: 'test',
+      name: 'Test',
+      released: null,
+      background_image: null,
+      metacritic: null,
+      rating: 0,
+      playtime: 0,
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 2, next: null, previous: null,
+      count: 2,
+      next: null,
+      previous: null,
       results: [
         { id: 1, image: 'https://img.com/1.jpg', width: 1920, height: 1080 },
         { id: 2, image: 'https://img.com/2.jpg', width: 1920, height: 1080 },
@@ -1216,31 +1281,60 @@ describe('enrichGame', () => {
 
     expect(database.deleteScreenshotsByGame).toHaveBeenCalledWith(db, 'game-1');
     expect(database.insertScreenshots).toHaveBeenCalledWith(db, [
-      { id: '1', game_id: 'game-1', image_url: 'https://img.com/1.jpg', width: 1920, height: 1080 },
-      { id: '2', game_id: 'game-1', image_url: 'https://img.com/2.jpg', width: 1920, height: 1080 },
+      {
+        id: '1',
+        game_id: 'game-1',
+        image_url: 'https://img.com/1.jpg',
+        width: 1920,
+        height: 1080,
+      },
+      {
+        id: '2',
+        game_id: 'game-1',
+        image_url: 'https://img.com/2.jpg',
+        width: 1920,
+        height: 1080,
+      },
     ]);
   });
 
   it('handles null optional fields gracefully', async () => {
     vi.mocked(rawg.getGameDetails).mockResolvedValue({
-      id: 123, slug: 'test', name: 'Test', released: null,
-      background_image: null, metacritic: null, rating: 0, playtime: 0,
-      developers: [], publishers: [], genres: [],
-      esrb_rating: null, website: undefined, metacritic_url: undefined,
+      id: 123,
+      slug: 'test',
+      name: 'Test',
+      released: null,
+      background_image: null,
+      metacritic: null,
+      rating: 0,
+      playtime: 0,
+      developers: [],
+      publishers: [],
+      genres: [],
+      esrb_rating: null,
+      website: undefined,
+      metacritic_url: undefined,
     });
     vi.mocked(rawg.getGameScreenshots).mockResolvedValue({
-      count: 0, next: null, previous: null, results: [],
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
     });
 
     await enrichGame(db, baseGame);
 
-    expect(database.updateGameEnrichment).toHaveBeenCalledWith(db, 'game-1', expect.objectContaining({
-      developer: null,
-      publisher: null,
-      esrb_rating: null,
-      website: null,
-      metacritic_url: null,
-    }));
+    expect(database.updateGameEnrichment).toHaveBeenCalledWith(
+      db,
+      'game-1',
+      expect.objectContaining({
+        developer: null,
+        publisher: null,
+        esrb_rating: null,
+        website: null,
+        metacritic_url: null,
+      }),
+    );
   });
 });
 ```
@@ -1263,6 +1357,7 @@ git commit -m "test: add unit tests for enrichment service"
 ### Task 11: Test TanStack Query Hooks — hooks/use-rawg-queries.ts
 
 **Files:**
+
 - Create: `hooks/__tests__/use-rawg-queries.test.ts`
 - Test target: `hooks/use-rawg-queries.ts` — `enabled` conditions on queries
 
@@ -1276,12 +1371,20 @@ import { waitFor } from '@testing-library/react-native';
 
 vi.mock('@/services/rawg', () => ({
   searchGames: vi.fn().mockResolvedValue({
-    count: 1, next: null, previous: null,
-    results: [{ id: 1, slug: 'zelda', name: 'Zelda', rating: 4.5, playtime: 50 }],
+    count: 1,
+    next: null,
+    previous: null,
+    results: [
+      { id: 1, slug: 'zelda', name: 'Zelda', rating: 4.5, playtime: 50 },
+    ],
   }),
   getTopGames: vi.fn().mockResolvedValue({
-    count: 1, next: null, previous: null,
-    results: [{ id: 2, slug: 'mario', name: 'Mario', rating: 4.8, playtime: 30 }],
+    count: 1,
+    next: null,
+    previous: null,
+    results: [
+      { id: 2, slug: 'mario', name: 'Mario', rating: 4.8, playtime: 30 },
+    ],
   }),
   getGameDetails: vi.fn(),
   getGameScreenshots: vi.fn(),
@@ -1290,21 +1393,21 @@ vi.mock('@/services/rawg', () => ({
 describe('useRawgSearch', () => {
   it('does not fetch when query is empty', () => {
     const { result } = renderHookWithProviders(() =>
-      useRawgSearch('', null, '-metacritic')
+      useRawgSearch('', null, '-metacritic'),
     );
     expect(result.current.isFetching).toBe(false);
   });
 
   it('does not fetch when query is whitespace', () => {
     const { result } = renderHookWithProviders(() =>
-      useRawgSearch('   ', null, '-metacritic')
+      useRawgSearch('   ', null, '-metacritic'),
     );
     expect(result.current.isFetching).toBe(false);
   });
 
   it('fetches when query is provided', async () => {
     const { result } = renderHookWithProviders(() =>
-      useRawgSearch('zelda', null, '-metacritic')
+      useRawgSearch('zelda', null, '-metacritic'),
     );
 
     await waitFor(() => {
@@ -1319,14 +1422,14 @@ describe('useRawgSearch', () => {
 describe('useRawgTopGames', () => {
   it('does not fetch when platformId is null', () => {
     const { result } = renderHookWithProviders(() =>
-      useRawgTopGames(null, '-metacritic')
+      useRawgTopGames(null, '-metacritic'),
     );
     expect(result.current.isFetching).toBe(false);
   });
 
   it('fetches when platformId is provided', async () => {
     const { result } = renderHookWithProviders(() =>
-      useRawgTopGames(15, '-metacritic')
+      useRawgTopGames(15, '-metacritic'),
     );
 
     await waitFor(() => {
@@ -1360,6 +1463,7 @@ git commit -m "test: add unit tests for RAWG query hooks"
 Run: `pnpm test`
 
 Expected: All tests pass. If any module resolution or mock errors occur, fix them by:
+
 - Adding failing packages to `test.deps.inline` in `vitest.config.ts`
 - Adding missing mocks to `test/setup.ts`
 - Fixing import path issues
@@ -1381,20 +1485,20 @@ git commit -m "fix: resolve test setup issues from full suite run"
 
 ## Summary
 
-| Task | What | Tests |
-|------|------|-------|
-| 1 | Install dependencies | — |
-| 2 | vitest.config.ts | — |
-| 3 | test/setup.ts (global mocks) | — |
-| 4 | test/test-utils.tsx (QueryClient wrapper) | — |
-| 5 | constants/theme.ts | 4 tests |
-| 6 | constants/platforms.ts | 5 tests |
-| 7 | stores/ui.ts | 11 tests |
-| 8 | services/database.ts | ~15 tests |
-| 9 | services/rawg.ts | ~12 tests |
-| 10 | services/enrichment.ts | ~6 tests |
-| 11 | hooks/use-rawg-queries.ts | ~5 tests |
-| 12 | Full suite run + fixes | — |
+| Task | What                                      | Tests     |
+| ---- | ----------------------------------------- | --------- |
+| 1    | Install dependencies                      | —         |
+| 2    | vitest.config.ts                          | —         |
+| 3    | test/setup.ts (global mocks)              | —         |
+| 4    | test/test-utils.tsx (QueryClient wrapper) | —         |
+| 5    | constants/theme.ts                        | 4 tests   |
+| 6    | constants/platforms.ts                    | 5 tests   |
+| 7    | stores/ui.ts                              | 11 tests  |
+| 8    | services/database.ts                      | ~15 tests |
+| 9    | services/rawg.ts                          | ~12 tests |
+| 10   | services/enrichment.ts                    | ~6 tests  |
+| 11   | hooks/use-rawg-queries.ts                 | ~5 tests  |
+| 12   | Full suite run + fixes                    | —         |
 
 **Total: ~58 tests across the highest-value parts of the codebase.**
 

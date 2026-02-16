@@ -20,6 +20,7 @@ pnpm lint             # Run ESLint (expo lint)
 ## Environment
 
 Requires a `.env` file with:
+
 ```
 EXPO_PUBLIC_RAWG_API_KEY=your_key_here
 ```
@@ -31,6 +32,7 @@ Get a free API key from [RAWG](https://rawg.io/apidocs).
 ### Routing
 
 File-based routing via Expo Router with drawer navigation:
+
 - `app/_layout.tsx` — Root layout: GluestackUIProvider → ThemeProvider → SQLiteProvider → GamepadProvider → Stack. Also runs `EnrichmentRunner` for background data enrichment.
 - `app/(drawer)/_layout.tsx` — Responsive drawer navigator (permanent in landscape, overlay in portrait)
 - `app/(drawer)/index.tsx` — Home screen with system selector and curated game grid
@@ -63,10 +65,12 @@ Typed routes are enabled (`typedRoutes` experiment in app.json).
 ### UI & Styling
 
 Two-layer system:
+
 1. **Gluestack UI v3** — Component library in `components/ui/`. Components use `forwardRef`, TVA (Tailwind Variants API) for variants, and accept `className` props.
 2. **NativeWind + Tailwind CSS** — Utility-class styling via `className` prop on all components.
 
 **Critical dark mode note**: Gluestack's dark theme **inverts** the color scale:
+
 - Low numbers (0, 50) = **dark** colors → use `bg-background-50` for dark surfaces
 - High numbers (800, 950) = **light** colors → `bg-background-800` is nearly white
 - `bg-primary-*` classes render as grayscale in dark mode → use inline `style={{ backgroundColor: Colors.tint }}` for colored accents

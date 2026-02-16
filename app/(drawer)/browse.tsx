@@ -35,13 +35,17 @@ export default function BrowseScreen() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => setDebouncedQuery(text), 300);
     },
-    [setSearchQuery]
+    [setSearchQuery],
   );
 
-  const searchResult = useRawgSearch(debouncedQuery, browsePlatformFilter, browseOrdering);
+  const searchResult = useRawgSearch(
+    debouncedQuery,
+    browsePlatformFilter,
+    browseOrdering,
+  );
   const topResult = useRawgTopGames(
     debouncedQuery.trim() ? null : browsePlatformFilter,
-    browseOrdering
+    browseOrdering,
   );
 
   const results = useMemo(() => {
@@ -62,7 +66,7 @@ export default function BrowseScreen() {
     <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
       <Pressable
         onPress={() => router.push(`/game/${item.slug}`)}
-        className="rounded-lg overflow-hidden"
+        className="overflow-hidden rounded-lg"
         style={{ backgroundColor: Colors.surface }}
       >
         <Image
@@ -71,12 +75,15 @@ export default function BrowseScreen() {
           contentFit="cover"
           transition={200}
         />
-        <Box className="p-2 gap-1">
-          <Text className="text-typography-white text-sm font-bold" numberOfLines={1}>
+        <Box className="gap-1 p-2">
+          <Text
+            className="text-sm font-bold text-typography-white"
+            numberOfLines={1}
+          >
             {item.name}
           </Text>
           <HStack className="items-center justify-between">
-            <Text className="text-typography-gray text-xs" numberOfLines={1}>
+            <Text className="text-xs text-typography-gray" numberOfLines={1}>
               {item.genres?.map((g) => g.name).join(', ') ?? ''}
             </Text>
             <MetacriticBadge score={item.metacritic} />
@@ -114,19 +121,27 @@ export default function BrowseScreen() {
       <HStack className="flex-wrap gap-2 px-4 py-2">
         <Pressable
           onPress={() => setBrowsePlatformFilter(null)}
-          className={`px-3 py-1 rounded-full ${browsePlatformFilter === null ? '' : 'bg-background-50'}`}
-          style={browsePlatformFilter === null ? { backgroundColor: Colors.tint } : undefined}
+          className={`rounded-full px-3 py-1 ${browsePlatformFilter === null ? '' : 'bg-background-50'}`}
+          style={
+            browsePlatformFilter === null
+              ? { backgroundColor: Colors.tint }
+              : undefined
+          }
         >
-          <Text className="text-typography-white text-xs">All</Text>
+          <Text className="text-xs text-typography-white">All</Text>
         </Pressable>
         {PLATFORMS.map((p) => (
           <Pressable
             key={p.id}
             onPress={() => setBrowsePlatformFilter(p.rawgId)}
-            className={`px-3 py-1 rounded-full ${browsePlatformFilter === p.rawgId ? '' : 'bg-background-50'}`}
-            style={browsePlatformFilter === p.rawgId ? { backgroundColor: p.accent } : undefined}
+            className={`rounded-full px-3 py-1 ${browsePlatformFilter === p.rawgId ? '' : 'bg-background-50'}`}
+            style={
+              browsePlatformFilter === p.rawgId
+                ? { backgroundColor: p.accent }
+                : undefined
+            }
           >
-            <Text className="text-typography-white text-xs">{p.shortName}</Text>
+            <Text className="text-xs text-typography-white">{p.shortName}</Text>
           </Pressable>
         ))}
       </HStack>

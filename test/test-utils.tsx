@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, type RenderHookOptions } from '@testing-library/react-native';
+import {
+  renderHook,
+  type RenderHookOptions,
+} from '@testing-library/react-native';
 
 export function createTestQueryClient() {
   return new QueryClient({
@@ -17,16 +20,14 @@ export function createWrapper() {
   const queryClient = createTestQueryClient();
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
   };
 }
 
 export function renderHookWithProviders<TResult>(
   hook: () => TResult,
-  options?: Omit<RenderHookOptions<any>, 'wrapper'>
+  options?: Omit<RenderHookOptions<any>, 'wrapper'>,
 ) {
   return renderHook(hook, {
     wrapper: createWrapper(),

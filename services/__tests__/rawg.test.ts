@@ -114,7 +114,9 @@ describe('error handling', () => {
 
   it('throws on 404', async () => {
     mockFetchError(404);
-    await expect(getGameDetails('nonexistent')).rejects.toThrow('RAWG API error: 404');
+    await expect(getGameDetails('nonexistent')).rejects.toThrow(
+      'RAWG API error: 404',
+    );
   });
 
   it('throws on 500', async () => {
@@ -140,6 +142,8 @@ describe('API key validation', () => {
     vi.stubEnv('EXPO_PUBLIC_RAWG_API_KEY', '');
     mockFetch(emptyPaginated);
 
-    await expect(searchGames('test')).rejects.toThrow('EXPO_PUBLIC_RAWG_API_KEY is not set');
+    await expect(searchGames('test')).rejects.toThrow(
+      'EXPO_PUBLIC_RAWG_API_KEY is not set',
+    );
   });
 });

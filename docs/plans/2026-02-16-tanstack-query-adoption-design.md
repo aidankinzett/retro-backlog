@@ -48,6 +48,7 @@ All navigation to `/game/[id]` uses `rawg_slug` consistently. The detail screen 
 ### Game detail screen (bug fix)
 
 `useGameDetail(slug)` hook:
+
 1. Query with key `['game', slug]`
 2. `queryFn`: call `getGameByRawgSlug(db, slug)` — if found, return it
 3. If not in DB, call `getGameDetails(slug)` from RAWG API, map to display shape
@@ -61,11 +62,13 @@ All navigation to `/game/[id]` uses `rawg_slug` consistently. The detail screen 
 ### Provider setup
 
 In `app/_layout.tsx`:
+
 ```
 GluestackUIProvider → ThemeProvider → SQLiteProvider → QueryClientProvider → GamepadProvider → Stack
 ```
 
 QueryClient config:
+
 - `staleTime: 5 minutes` default
 - React Native: `focusManager` with AppState, `onlineManager` with network
 

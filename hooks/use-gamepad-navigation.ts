@@ -8,7 +8,12 @@ interface FocusGridOptions {
   onFocusChange?: (row: number, col: number) => void;
 }
 
-export function useFocusGrid({ rows, columns, onSelect, onFocusChange }: FocusGridOptions) {
+export function useFocusGrid({
+  rows,
+  columns,
+  onSelect,
+  onFocusChange,
+}: FocusGridOptions) {
   const focusRow = useRef(0);
   const focusCol = useRef(0);
 
@@ -40,7 +45,7 @@ export function useFocusGrid({ rows, columns, onSelect, onFocusChange }: FocusGr
 
   const getFocusIndex = useCallback(
     () => focusRow.current * columns + focusCol.current,
-    [columns]
+    [columns],
   );
 
   return { focusRow, focusCol, getFocusIndex };

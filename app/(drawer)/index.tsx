@@ -39,7 +39,7 @@ export default function HomeScreen() {
       <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
         <Pressable
           onPress={() => router.push(`/game/${item.slug}`)}
-          className="rounded-lg overflow-hidden"
+          className="overflow-hidden rounded-lg"
           style={{ backgroundColor: Colors.surface }}
         >
           <Image
@@ -48,19 +48,27 @@ export default function HomeScreen() {
             contentFit="cover"
             transition={200}
           />
-          <Box className="p-2 gap-1">
-            <Text className="text-typography-white text-sm font-bold" numberOfLines={1}>
+          <Box className="gap-1 p-2">
+            <Text
+              className="text-sm font-bold text-typography-white"
+              numberOfLines={1}
+            >
               {item.name}
             </Text>
             <HStack className="items-center justify-between">
-              <Text className="text-typography-gray text-xs flex-1" numberOfLines={1}>
+              <Text
+                className="flex-1 text-xs text-typography-gray"
+                numberOfLines={1}
+              >
                 {item.genres?.map((g) => g.name).join(', ') ?? ''}
               </Text>
               <MetacriticBadge score={item.metacritic} />
             </HStack>
-            <HStack className="items-center justify-between mt-1">
+            <HStack className="mt-1 items-center justify-between">
               {platformLabel ? (
-                <Text className="text-typography-gray text-xs font-bold">{platformLabel}</Text>
+                <Text className="text-xs font-bold text-typography-gray">
+                  {platformLabel}
+                </Text>
               ) : (
                 <View />
               )}
@@ -91,8 +99,8 @@ export default function HomeScreen() {
           columnWrapperStyle={columns > 1 ? { gap: 12 } : undefined}
           renderItem={renderItem}
           ListEmptyComponent={
-            <VStack className="flex-1 items-center justify-center py-20 gap-2">
-              <Text className="text-typography-gray text-center">
+            <VStack className="flex-1 items-center justify-center gap-2 py-20">
+              <Text className="text-center text-typography-gray">
                 No top retro games found. Check your connection and try again.
               </Text>
             </VStack>

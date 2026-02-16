@@ -28,10 +28,22 @@ export default function DrawerLayout() {
         },
       }}
     >
-      <Drawer.Screen name="index" options={{ drawerLabel: 'Home', title: 'Home' }} />
-      <Drawer.Screen name="browse" options={{ drawerLabel: 'Browse', title: 'Browse' }} />
-      <Drawer.Screen name="backlog" options={{ drawerLabel: 'Backlog', title: 'Backlog' }} />
-      <Drawer.Screen name="settings" options={{ drawerLabel: 'Settings', title: 'Settings' }} />
+      <Drawer.Screen
+        name="index"
+        options={{ drawerLabel: 'Home', title: 'Home' }}
+      />
+      <Drawer.Screen
+        name="browse"
+        options={{ drawerLabel: 'Browse', title: 'Browse' }}
+      />
+      <Drawer.Screen
+        name="backlog"
+        options={{ drawerLabel: 'Backlog', title: 'Backlog' }}
+      />
+      <Drawer.Screen
+        name="settings"
+        options={{ drawerLabel: 'Settings', title: 'Settings' }}
+      />
     </Drawer>
   );
 }

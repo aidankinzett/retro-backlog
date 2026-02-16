@@ -10,7 +10,7 @@ import {
 export function useRawgSearch(
   query: string,
   platformFilter: number | null,
-  ordering: string
+  ordering: string,
 ) {
   return useQuery({
     queryKey: ['rawg', 'search', query, platformFilter, ordering],
@@ -23,10 +23,7 @@ export function useRawgSearch(
   });
 }
 
-export function useRawgTopGames(
-  platformId: number | null,
-  ordering: string
-) {
+export function useRawgTopGames(platformId: number | null, ordering: string) {
   return useQuery({
     queryKey: ['rawg', 'top', platformId, ordering],
     queryFn: () => getTopGames(platformId!, { ordering }),

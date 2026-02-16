@@ -13,6 +13,7 @@
 ### Task 1: Install TanStack Query
 
 **Files:**
+
 - Modify: `package.json`
 
 **Step 1: Install the package**
@@ -32,6 +33,7 @@ git commit -m "chore: add @tanstack/react-query dependency"
 ### Task 2: Add QueryClientProvider to root layout
 
 **Files:**
+
 - Modify: `app/_layout.tsx`
 
 **Step 1: Add QueryClientProvider**
@@ -44,7 +46,11 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SQLiteProvider } from 'expo-sqlite';
 import { View, AppState } from 'react-native';
-import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  focusManager,
+} from '@tanstack/react-query';
 import 'react-native-reanimated';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
@@ -75,7 +81,10 @@ export default function RootLayout() {
     <View style={{ flex: 1, backgroundColor: Colors.background }}>
       <GluestackUIProvider mode="dark">
         <ThemeProvider value={DarkTheme}>
-          <SQLiteProvider databaseName="retro-backlog.db" onInit={migrateDbIfNeeded}>
+          <SQLiteProvider
+            databaseName="retro-backlog.db"
+            onInit={migrateDbIfNeeded}
+          >
             <QueryClientProvider client={queryClient}>
               <GamepadProvider>
                 <Stack
@@ -83,7 +92,10 @@ export default function RootLayout() {
                     contentStyle: { backgroundColor: Colors.background },
                   }}
                 >
-                  <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(drawer)"
+                    options={{ headerShown: false }}
+                  />
                   <Stack.Screen
                     name="game/[id]"
                     options={{
@@ -119,6 +131,7 @@ git commit -m "feat: add QueryClientProvider to root layout with RN focus manage
 ### Task 3: Create TanStack Query hooks for RAWG API
 
 **Files:**
+
 - Create: `hooks/use-rawg-queries.ts`
 
 **Step 1: Create the hooks file**
@@ -136,7 +149,7 @@ import {
 export function useRawgSearch(
   query: string,
   platformFilter: number | null,
-  ordering: string
+  ordering: string,
 ) {
   return useQuery({
     queryKey: ['rawg', 'search', query, platformFilter, ordering],
@@ -149,10 +162,7 @@ export function useRawgSearch(
   });
 }
 
-export function useRawgTopGames(
-  platformId: number | null,
-  ordering: string
-) {
+export function useRawgTopGames(platformId: number | null, ordering: string) {
   return useQuery({
     queryKey: ['rawg', 'top', platformId, ordering],
     queryFn: () => getTopGames(platformId!, { ordering }),
@@ -189,6 +199,7 @@ git commit -m "feat: add TanStack Query hooks for RAWG API"
 ### Task 4: Create TanStack Query hooks for SQLite reads
 
 **Files:**
+
 - Create: `hooks/use-db-queries.ts`
 
 **Step 1: Create the hooks file**
@@ -212,7 +223,10 @@ import { PLATFORMS } from '@/constants/platforms';
 import { randomUUID } from 'expo-crypto';
 import type { BacklogStatus } from '@/stores/ui';
 
-export function useGamesByPlatform(platformId: string, vibeFilter?: 'essential' | 'hidden_gem') {
+export function useGamesByPlatform(
+  platformId: string,
+  vibeFilter?: 'essential' | 'hidden_gem',
+) {
   const db = useSQLiteContext();
   return useQuery({
     queryKey: ['games', 'platform', platformId, vibeFilter],
@@ -229,7 +243,11 @@ export function useGameDetail(slug: string | undefined) {
   const db = useSQLiteContext();
   return useQuery({
     queryKey: ['game', slug],
-    queryFn: async (): Promise<{ game: Game | null; rawgGame: RawgGame | null; source: 'db' | 'rawg' }> => {
+    queryFn: async (): Promise<{
+      game: Game | null;
+      rawgGame: RawgGame | null;
+      source: 'db' | 'rawg';
+    }> => {
       // Try local DB first
       const dbGame = await getGameByRawgSlug(db, slug!);
       if (dbGame) {
@@ -254,7 +272,10 @@ export function useGameScreenshots(gameId: string | undefined) {
   });
 }
 
-export function useBacklogGames(statusFilter?: string, platformFilter?: string) {
+export function useBacklogGames(
+  statusFilter?: string,
+  platformFilter?: string,
+) {
   const db = useSQLiteContext();
   return useQuery({
     queryKey: ['backlog', statusFilter ?? null, platformFilter ?? null],
@@ -277,8 +298,12 @@ export function useSettingsCounts() {
   return useQuery({
     queryKey: ['settings', 'counts'],
     queryFn: async () => {
-      const games = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM games');
-      const screenshots = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM screenshots');
+      const games = await db.getFirstAsync<{ count: number }>(
+        'SELECT COUNT(*) as count FROM games',
+      );
+      const screenshots = await db.getFirstAsync<{ count: number }>(
+        'SELECT COUNT(*) as count FROM screenshots',
+      );
       return {
         gameCount: games?.count ?? 0,
         screenshotCount: screenshots?.count ?? 0,
@@ -295,7 +320,13 @@ export function useAddToBacklog() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ rawgGame, status = 'want_to_play' }: { rawgGame: RawgGame; status?: BacklogStatus }) => {
+    mutationFn: async ({
+      rawgGame,
+      status = 'want_to_play',
+    }: {
+      rawgGame: RawgGame;
+      status?: BacklogStatus;
+    }) => {
       const existing = await getGameByRawgSlug(db, rawgGame.slug);
       if (existing) {
         await updateBacklogStatus(db, existing.id, status);
@@ -304,7 +335,7 @@ export function useAddToBacklog() {
 
       const gameId = randomUUID();
       const platformEntry = PLATFORMS.find((p) =>
-        rawgGame.platforms?.some((rp) => rp.platform.id === p.rawgId)
+        rawgGame.platforms?.some((rp) => rp.platform.id === p.rawgId),
       );
       await insertGame(db, {
         id: gameId,
@@ -331,10 +362,12 @@ export function useAddToBacklog() {
       });
 
       // Enrich in background
-      const game = await import('@/services/database').then((m) => m.getGameById(db, gameId));
+      const game = await import('@/services/database').then((m) =>
+        m.getGameById(db, gameId),
+      );
       if (game && !game.last_enriched) {
         enrichGame(db, game).catch((err) =>
-          console.error(`Enrichment failed for ${game.title}:`, err)
+          console.error(`Enrichment failed for ${game.title}:`, err),
         );
       }
 
@@ -354,7 +387,15 @@ export function useUpdateBacklogStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ gameId, slug, status }: { gameId: string; slug: string | null; status: BacklogStatus }) => {
+    mutationFn: async ({
+      gameId,
+      slug,
+      status,
+    }: {
+      gameId: string;
+      slug: string | null;
+      status: BacklogStatus;
+    }) => {
       await updateBacklogStatus(db, gameId, status);
     },
     onSuccess: (_data, { slug }) => {
@@ -373,8 +414,8 @@ export function useClearCache() {
 
   return useMutation({
     mutationFn: async () => {
-      await db.execAsync("UPDATE games SET last_enriched = NULL");
-      await db.execAsync("DELETE FROM screenshots");
+      await db.execAsync('UPDATE games SET last_enriched = NULL');
+      await db.execAsync('DELETE FROM screenshots');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings', 'counts'] });
@@ -396,6 +437,7 @@ git commit -m "feat: add TanStack Query hooks for SQLite reads and mutations"
 ### Task 5: Convert browse screen to TanStack Query
 
 **Files:**
+
 - Modify: `app/(drawer)/browse.tsx`
 
 **Step 1: Rewrite browse screen**
@@ -439,13 +481,17 @@ export default function BrowseScreen() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => setDebouncedQuery(text), 300);
     },
-    [setSearchQuery]
+    [setSearchQuery],
   );
 
-  const searchResult = useRawgSearch(debouncedQuery, browsePlatformFilter, browseOrdering);
+  const searchResult = useRawgSearch(
+    debouncedQuery,
+    browsePlatformFilter,
+    browseOrdering,
+  );
   const topResult = useRawgTopGames(
     debouncedQuery.trim() ? null : browsePlatformFilter,
-    browseOrdering
+    browseOrdering,
   );
 
   const results = useMemo(() => {
@@ -454,7 +500,11 @@ export default function BrowseScreen() {
     return [];
   }, [debouncedQuery, browsePlatformFilter, searchResult.data, topResult.data]);
 
-  const loading = debouncedQuery.trim() ? searchResult.isPending && searchResult.fetchStatus !== 'idle' : browsePlatformFilter ? topResult.isPending && topResult.fetchStatus !== 'idle' : false;
+  const loading = debouncedQuery.trim()
+    ? searchResult.isPending && searchResult.fetchStatus !== 'idle'
+    : browsePlatformFilter
+      ? topResult.isPending && topResult.fetchStatus !== 'idle'
+      : false;
 
   const addToBacklog = useAddToBacklog();
 
@@ -462,7 +512,7 @@ export default function BrowseScreen() {
     <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
       <Pressable
         onPress={() => router.push(`/game/${item.slug}`)}
-        className="rounded-lg overflow-hidden"
+        className="overflow-hidden rounded-lg"
         style={{ backgroundColor: Colors.surface }}
       >
         <Image
@@ -471,22 +521,27 @@ export default function BrowseScreen() {
           contentFit="cover"
           transition={200}
         />
-        <Box className="p-2 gap-1">
-          <Text className="text-typography-white text-sm font-bold" numberOfLines={1}>
+        <Box className="gap-1 p-2">
+          <Text
+            className="text-sm font-bold text-typography-white"
+            numberOfLines={1}
+          >
             {item.name}
           </Text>
           <HStack className="items-center justify-between">
-            <Text className="text-typography-gray text-xs" numberOfLines={1}>
+            <Text className="text-xs text-typography-gray" numberOfLines={1}>
               {item.genres?.map((g) => g.name).join(', ') ?? ''}
             </Text>
             <MetacriticBadge score={item.metacritic} />
           </HStack>
           <Pressable
             onPress={() => addToBacklog.mutate({ rawgGame: item })}
-            className="mt-1 px-2 py-1 rounded self-start"
+            className="mt-1 self-start rounded px-2 py-1"
             style={{ backgroundColor: Colors.tint }}
           >
-            <Text className="text-typography-white text-xs font-bold">+ Backlog</Text>
+            <Text className="text-xs font-bold text-typography-white">
+              + Backlog
+            </Text>
           </Pressable>
         </Box>
       </Pressable>
@@ -517,19 +572,27 @@ export default function BrowseScreen() {
       <HStack className="flex-wrap gap-2 px-4 py-2">
         <Pressable
           onPress={() => setBrowsePlatformFilter(null)}
-          className={`px-3 py-1 rounded-full ${browsePlatformFilter === null ? '' : 'bg-background-50'}`}
-          style={browsePlatformFilter === null ? { backgroundColor: Colors.tint } : undefined}
+          className={`rounded-full px-3 py-1 ${browsePlatformFilter === null ? '' : 'bg-background-50'}`}
+          style={
+            browsePlatformFilter === null
+              ? { backgroundColor: Colors.tint }
+              : undefined
+          }
         >
-          <Text className="text-typography-white text-xs">All</Text>
+          <Text className="text-xs text-typography-white">All</Text>
         </Pressable>
         {PLATFORMS.map((p) => (
           <Pressable
             key={p.id}
             onPress={() => setBrowsePlatformFilter(p.rawgId)}
-            className={`px-3 py-1 rounded-full ${browsePlatformFilter === p.rawgId ? '' : 'bg-background-50'}`}
-            style={browsePlatformFilter === p.rawgId ? { backgroundColor: p.accent } : undefined}
+            className={`rounded-full px-3 py-1 ${browsePlatformFilter === p.rawgId ? '' : 'bg-background-50'}`}
+            style={
+              browsePlatformFilter === p.rawgId
+                ? { backgroundColor: p.accent }
+                : undefined
+            }
           >
-            <Text className="text-typography-white text-xs">{p.shortName}</Text>
+            <Text className="text-xs text-typography-white">{p.shortName}</Text>
           </Pressable>
         ))}
       </HStack>
@@ -567,6 +630,7 @@ export default function BrowseScreen() {
 **Step 2: Verify browse screen works**
 
 Run on Android emulator. Test:
+
 - Search for a game → results appear
 - Select platform filter → top games load
 - Tap a game → navigates to `/game/<slug>`
@@ -583,6 +647,7 @@ git commit -m "refactor: convert browse screen to TanStack Query"
 ### Task 6: Fix game detail screen — slug-based + RAWG fallback
 
 **Files:**
+
 - Modify: `app/game/[id].tsx`
 
 **Step 1: Rewrite game detail screen**
@@ -604,7 +669,12 @@ import { MetacriticBadge } from '@/components/metacritic-badge';
 import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 import { PLATFORM_MAP, PLATFORMS } from '@/constants/platforms';
-import { useGameDetail, useGameScreenshots, useUpdateBacklogStatus, useAddToBacklog } from '@/hooks/use-db-queries';
+import {
+  useGameDetail,
+  useGameScreenshots,
+  useUpdateBacklogStatus,
+  useAddToBacklog,
+} from '@/hooks/use-db-queries';
 import { BACKLOG_STATUSES, type BacklogStatus } from '@/stores/ui';
 
 export default function GameDetailScreen() {
@@ -636,12 +706,14 @@ export default function GameDetailScreen() {
   const curatedDesc = game?.curated_desc;
   const backlogStatus = game?.backlog_status ?? 'none';
 
-  const platformId = game?.platform ?? (() => {
-    const entry = PLATFORMS.find((p) =>
-      rawgGame?.platforms?.some((rp) => rp.platform.id === p.rawgId)
-    );
-    return entry?.id;
-  })();
+  const platformId =
+    game?.platform ??
+    (() => {
+      const entry = PLATFORMS.find((p) =>
+        rawgGame?.platforms?.some((rp) => rp.platform.id === p.rawgId),
+      );
+      return entry?.id;
+    })();
   const platform = platformId ? PLATFORM_MAP[platformId] : undefined;
 
   // Screenshots from DB (only available for games in the database)
@@ -651,10 +723,17 @@ export default function GameDetailScreen() {
     const newStatus = backlogStatus === status ? 'none' : status;
     if (game) {
       // Game is in DB — update directly
-      updateStatus.mutate({ gameId: game.id, slug: game.rawg_slug, status: newStatus });
+      updateStatus.mutate({
+        gameId: game.id,
+        slug: game.rawg_slug,
+        status: newStatus,
+      });
     } else if (rawgGame) {
       // Game not in DB — insert it with this status
-      addToBacklog.mutate({ rawgGame, status: newStatus === 'none' ? 'want_to_play' : newStatus });
+      addToBacklog.mutate({
+        rawgGame,
+        status: newStatus === 'none' ? 'want_to_play' : newStatus,
+      });
     }
   };
 
@@ -670,8 +749,13 @@ export default function GameDetailScreen() {
     return (
       <Box className="flex-1 items-center justify-center bg-background-dark">
         <Text className="text-typography-gray">Game not found</Text>
-        <Pressable onPress={() => router.back()} className="mt-4 px-4 py-2 rounded-lg bg-background-50">
-          <Text style={{ color: Colors.tint }} className="font-bold">← Go Back</Text>
+        <Pressable
+          onPress={() => router.back()}
+          className="mt-4 rounded-lg bg-background-50 px-4 py-2"
+        >
+          <Text style={{ color: Colors.tint }} className="font-bold">
+            ← Go Back
+          </Text>
         </Pressable>
       </Box>
     );
@@ -692,14 +776,18 @@ export default function GameDetailScreen() {
           transition={200}
         />
       )}
-      <Heading size="lg" className="text-typography-white">{title}</Heading>
+      <Heading size="lg" className="text-typography-white">
+        {title}
+      </Heading>
 
       <HStack className="items-center gap-3">
         <MetacriticBadge score={metacritic} size="lg" />
         {rawgRating != null && (
           <VStack>
-            <Text className="text-typography-gray text-xs">RAWG</Text>
-            <Text className="text-typography-white font-bold">{rawgRating.toFixed(1)}</Text>
+            <Text className="text-xs text-typography-gray">RAWG</Text>
+            <Text className="font-bold text-typography-white">
+              {rawgRating.toFixed(1)}
+            </Text>
           </VStack>
         )}
       </HStack>
@@ -715,28 +803,32 @@ export default function GameDetailScreen() {
       )}
       {platform && (
         <Box
-          className="self-start px-3 py-1 rounded-full"
+          className="self-start rounded-full px-3 py-1"
           style={{ backgroundColor: platform.accent }}
         >
-          <Text className="text-typography-white text-xs font-bold">{platform.name}</Text>
+          <Text className="text-xs font-bold text-typography-white">
+            {platform.name}
+          </Text>
         </Box>
       )}
       {genre ? (
         <HStack className="flex-wrap gap-2">
           {genre.split(',').map((g) => (
-            <Box key={g.trim()} className="px-2 py-1 rounded bg-background-50">
-              <Text className="text-typography-gray text-xs">{g.trim()}</Text>
+            <Box key={g.trim()} className="rounded bg-background-50 px-2 py-1">
+              <Text className="text-xs text-typography-gray">{g.trim()}</Text>
             </Box>
           ))}
         </HStack>
       ) : null}
       {esrbRating && (
-        <Text className="text-typography-gray text-xs">ESRB: {esrbRating}</Text>
+        <Text className="text-xs text-typography-gray">ESRB: {esrbRating}</Text>
       )}
 
       {/* Backlog status */}
-      <VStack className="gap-2 mt-2">
-        <Text className="text-typography-gray text-sm font-bold">Backlog Status</Text>
+      <VStack className="mt-2 gap-2">
+        <Text className="text-sm font-bold text-typography-gray">
+          Backlog Status
+        </Text>
         <HStack className="flex-wrap gap-2">
           {BACKLOG_STATUSES.map((s) => {
             const isActive = backlogStatus === s.value;
@@ -744,7 +836,7 @@ export default function GameDetailScreen() {
               <Pressable
                 key={s.value}
                 onPress={() => handleStatusChange(s.value)}
-                className={`px-3 py-1.5 rounded-full ${isActive ? '' : 'bg-background-50'}`}
+                className={`rounded-full px-3 py-1.5 ${isActive ? '' : 'bg-background-50'}`}
                 style={isActive ? { backgroundColor: Colors.tint } : undefined}
               >
                 <Text
@@ -764,29 +856,36 @@ export default function GameDetailScreen() {
     <VStack className={`gap-3 ${isLandscape ? 'flex-1' : ''} p-4`}>
       {description && (
         <VStack className="gap-2">
-          <Text className="text-typography-gray text-sm font-bold">About</Text>
-          <Text className="text-typography-white text-sm leading-relaxed" numberOfLines={isLandscape ? 8 : undefined}>
+          <Text className="text-sm font-bold text-typography-gray">About</Text>
+          <Text
+            className="text-sm leading-relaxed text-typography-white"
+            numberOfLines={isLandscape ? 8 : undefined}
+          >
             {description}
           </Text>
         </VStack>
       )}
 
       {playtime != null && playtime > 0 && (
-        <Text className="text-typography-gray text-sm">
+        <Text className="text-sm text-typography-gray">
           Average playtime: {playtime} hours
         </Text>
       )}
 
       {curatedDesc && (
-        <Box className="p-3 rounded-lg bg-background-50 border border-outline-100">
-          <Text className="text-typography-gray text-xs font-bold mb-1">Why this game?</Text>
-          <Text className="text-typography-white text-sm">{curatedDesc}</Text>
+        <Box className="rounded-lg border border-outline-100 bg-background-50 p-3">
+          <Text className="mb-1 text-xs font-bold text-typography-gray">
+            Why this game?
+          </Text>
+          <Text className="text-sm text-typography-white">{curatedDesc}</Text>
         </Box>
       )}
 
       {screenshots.length > 0 && (
         <VStack className="gap-2">
-          <Text className="text-typography-gray text-sm font-bold">Screenshots</Text>
+          <Text className="text-sm font-bold text-typography-gray">
+            Screenshots
+          </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <HStack className="gap-2">
               {screenshots.map((s) => (
@@ -808,12 +907,17 @@ export default function GameDetailScreen() {
   return (
     <Box className="flex-1 bg-background-dark">
       {/* Back button */}
-      <Box className="px-4 pb-1" style={{ paddingTop: Math.max(insets.top, 12) }}>
+      <Box
+        className="px-4 pb-1"
+        style={{ paddingTop: Math.max(insets.top, 12) }}
+      >
         <Pressable
           onPress={() => router.back()}
-          className="self-start px-3 py-2 rounded-lg bg-background-50"
+          className="self-start rounded-lg bg-background-50 px-3 py-2"
         >
-          <Text style={{ color: Colors.tint }} className="text-base font-bold">← Back</Text>
+          <Text style={{ color: Colors.tint }} className="text-base font-bold">
+            ← Back
+          </Text>
         </Pressable>
       </Box>
 
@@ -838,6 +942,7 @@ export default function GameDetailScreen() {
 **Step 2: Verify the bug is fixed**
 
 On Android emulator:
+
 - Go to Browse → search for "Half-Life 2" → tap the card
 - Game detail should load from RAWG API (not stuck on "Loading...")
 - Tap a backlog status → game gets inserted into DB
@@ -855,6 +960,7 @@ git commit -m "fix: game detail screen uses slug with DB-first, RAWG API fallbac
 ### Task 7: Update home screen and game-grid to use slugs + TanStack Query
 
 **Files:**
+
 - Modify: `app/(drawer)/index.tsx`
 - Modify: `components/game-grid.tsx`
 
@@ -877,23 +983,38 @@ export default function HomeScreen() {
   const currentSystemId = useUIStore((s) => s.currentSystemId);
   const setCurrentSystemId = useUIStore((s) => s.setCurrentSystemId);
 
-  const { data: essentials = [] } = useGamesByPlatform(currentSystemId, 'essential');
-  const { data: hiddenGems = [] } = useGamesByPlatform(currentSystemId, 'hidden_gem');
+  const { data: essentials = [] } = useGamesByPlatform(
+    currentSystemId,
+    'essential',
+  );
+  const { data: hiddenGems = [] } = useGamesByPlatform(
+    currentSystemId,
+    'hidden_gem',
+  );
 
-  const allGames = useMemo(() => [...essentials, ...hiddenGems], [essentials, hiddenGems]);
+  const allGames = useMemo(
+    () => [...essentials, ...hiddenGems],
+    [essentials, hiddenGems],
+  );
   const hasGames = allGames.length > 0;
 
   return (
     <Box className="flex-1 bg-background-dark">
-      <SystemSelector selectedId={currentSystemId} onSelect={setCurrentSystemId} />
+      <SystemSelector
+        selectedId={currentSystemId}
+        onSelect={setCurrentSystemId}
+      />
 
       {hasGames ? (
         <GameGrid games={allGames} />
       ) : (
         <VStack className="flex-1 items-center justify-center gap-2 px-8">
-          <Heading size="xl" className="text-typography-white">No games yet</Heading>
-          <Text className="text-typography-gray text-center">
-            Curated picks will appear here once seed data is loaded. Browse games to add them to your collection.
+          <Heading size="xl" className="text-typography-white">
+            No games yet
+          </Heading>
+          <Text className="text-center text-typography-gray">
+            Curated picks will appear here once seed data is loaded. Browse
+            games to add them to your collection.
           </Text>
         </VStack>
       )}
@@ -955,6 +1076,7 @@ git commit -m "refactor: convert home screen to TanStack Query, use slug in game
 ### Task 8: Convert backlog screen to TanStack Query + slug navigation
 
 **Files:**
+
 - Modify: `app/(drawer)/backlog.tsx`
 
 **Step 1: Rewrite backlog screen**
@@ -975,12 +1097,17 @@ import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 import { type Game } from '@/services/database';
 import { useUIStore, BACKLOG_STATUSES, type BacklogStatus } from '@/stores/ui';
-import { useBacklogGames, useBacklogStats, useUpdateBacklogStatus } from '@/hooks/use-db-queries';
+import {
+  useBacklogGames,
+  useBacklogStats,
+  useUpdateBacklogStatus,
+} from '@/hooks/use-db-queries';
 
-const ALL_FILTERS: { value: BacklogStatus | null; label: string; shortLabel: string }[] = [
-  { value: null, label: 'All', shortLabel: 'All' },
-  ...BACKLOG_STATUSES,
-];
+const ALL_FILTERS: {
+  value: BacklogStatus | null;
+  label: string;
+  shortLabel: string;
+}[] = [{ value: null, label: 'All', shortLabel: 'All' }, ...BACKLOG_STATUSES];
 
 export default function BacklogScreen() {
   const router = useRouter();
@@ -990,21 +1117,39 @@ export default function BacklogScreen() {
   const setStatusFilter = useUIStore((s) => s.setBacklogStatusFilter);
 
   const { data: games = [] } = useBacklogGames(statusFilter ?? undefined);
-  const { data: stats = { total: 0, want_to_play: 0, playing: 0, completed: 0, dropped: 0 } } = useBacklogStats();
+  const {
+    data: stats = {
+      total: 0,
+      want_to_play: 0,
+      playing: 0,
+      completed: 0,
+      dropped: 0,
+    },
+  } = useBacklogStats();
   const updateStatus = useUpdateBacklogStatus();
 
   const cycleStatus = (game: Game) => {
-    const order: BacklogStatus[] = ['want_to_play', 'playing', 'completed', 'dropped', 'none'];
+    const order: BacklogStatus[] = [
+      'want_to_play',
+      'playing',
+      'completed',
+      'dropped',
+      'none',
+    ];
     const currentIndex = order.indexOf(game.backlog_status as BacklogStatus);
     const nextStatus = order[(currentIndex + 1) % order.length];
-    updateStatus.mutate({ gameId: game.id, slug: game.rawg_slug, status: nextStatus });
+    updateStatus.mutate({
+      gameId: game.id,
+      slug: game.rawg_slug,
+      status: nextStatus,
+    });
   };
 
   const renderItem = ({ item }: { item: Game }) => (
     <View style={{ flex: 1, maxWidth: `${100 / columns}%` }}>
       <Pressable
         onPress={() => router.push(`/game/${item.rawg_slug ?? item.id}`)}
-        className="rounded-lg overflow-hidden"
+        className="overflow-hidden rounded-lg"
         style={{ backgroundColor: Colors.surface }}
       >
         <Image
@@ -1013,14 +1158,21 @@ export default function BacklogScreen() {
           contentFit="cover"
           transition={200}
         />
-        <Box className="p-2 gap-1">
-          <Text className="text-typography-white text-sm font-bold" numberOfLines={1}>
+        <Box className="gap-1 p-2">
+          <Text
+            className="text-sm font-bold text-typography-white"
+            numberOfLines={1}
+          >
             {item.title}
           </Text>
           <HStack className="items-center justify-between">
             <Pressable onPress={() => cycleStatus(item)}>
-              <Text style={{ color: Colors.tint }} className="text-xs font-bold">
-                {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)?.shortLabel ?? 'Unknown'}
+              <Text
+                style={{ color: Colors.tint }}
+                className="text-xs font-bold"
+              >
+                {BACKLOG_STATUSES.find((s) => s.value === item.backlog_status)
+                  ?.shortLabel ?? 'Unknown'}
               </Text>
             </Pressable>
             <MetacriticBadge score={item.metacritic} />
@@ -1033,22 +1185,30 @@ export default function BacklogScreen() {
   return (
     <Box className="flex-1 bg-background-dark">
       {/* Stats bar */}
-      <HStack className="px-4 py-3 gap-4 flex-wrap">
+      <HStack className="flex-wrap gap-4 px-4 py-3">
         <VStack className="items-center">
-          <Text className="text-typography-white font-bold text-lg">{stats.total}</Text>
-          <Text className="text-typography-gray text-xs">Total</Text>
+          <Text className="text-lg font-bold text-typography-white">
+            {stats.total}
+          </Text>
+          <Text className="text-xs text-typography-gray">Total</Text>
         </VStack>
         <VStack className="items-center">
-          <Text className="text-typography-white font-bold text-lg">{stats.completed}</Text>
-          <Text className="text-typography-gray text-xs">Completed</Text>
+          <Text className="text-lg font-bold text-typography-white">
+            {stats.completed}
+          </Text>
+          <Text className="text-xs text-typography-gray">Completed</Text>
         </VStack>
         <VStack className="items-center">
-          <Text className="text-typography-white font-bold text-lg">{stats.playing}</Text>
-          <Text className="text-typography-gray text-xs">Playing</Text>
+          <Text className="text-lg font-bold text-typography-white">
+            {stats.playing}
+          </Text>
+          <Text className="text-xs text-typography-gray">Playing</Text>
         </VStack>
         <VStack className="items-center">
-          <Text className="text-typography-white font-bold text-lg">{stats.want_to_play}</Text>
-          <Text className="text-typography-gray text-xs">Want to Play</Text>
+          <Text className="text-lg font-bold text-typography-white">
+            {stats.want_to_play}
+          </Text>
+          <Text className="text-xs text-typography-gray">Want to Play</Text>
         </VStack>
       </HStack>
 
@@ -1060,7 +1220,7 @@ export default function BacklogScreen() {
             <Pressable
               key={f.value ?? 'all'}
               onPress={() => setStatusFilter(f.value)}
-              className={`px-3 py-1 rounded-full ${isActive ? '' : 'bg-background-50'}`}
+              className={`rounded-full px-3 py-1 ${isActive ? '' : 'bg-background-50'}`}
               style={isActive ? { backgroundColor: Colors.tint } : undefined}
             >
               <Text
@@ -1085,7 +1245,9 @@ export default function BacklogScreen() {
         ListEmptyComponent={
           <Box className="flex-1 items-center justify-center py-20">
             <Text className="text-typography-gray">
-              {statusFilter ? 'No games with this status' : 'Your backlog is empty. Browse games to add some!'}
+              {statusFilter
+                ? 'No games with this status'
+                : 'Your backlog is empty. Browse games to add some!'}
             </Text>
           </Box>
         }
@@ -1098,6 +1260,7 @@ export default function BacklogScreen() {
 **Step 2: Verify backlog screen works**
 
 On Android emulator:
+
 - Navigate to Backlog tab → games load
 - Tap status filter → list updates
 - Tap status text on card → cycles status
@@ -1115,6 +1278,7 @@ git commit -m "refactor: convert backlog screen to TanStack Query with slug navi
 ### Task 9: Convert settings screen to TanStack Query
 
 **Files:**
+
 - Modify: `app/(drawer)/settings.tsx`
 
 **Step 1: Rewrite settings screen**
@@ -1139,7 +1303,8 @@ export default function SettingsScreen() {
   const accentOverride = useUIStore((s) => s.accentOverride);
   const setAccentOverride = useUIStore((s) => s.setAccentOverride);
 
-  const { data: counts = { gameCount: 0, screenshotCount: 0 } } = useSettingsCounts();
+  const { data: counts = { gameCount: 0, screenshotCount: 0 } } =
+    useSettingsCounts();
   const clearCache = useClearCache();
 
   const accentOptions = [
@@ -1150,22 +1315,28 @@ export default function SettingsScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: Colors.background }}>
       <Box className="p-6">
-        <VStack className="gap-8 max-w-lg">
+        <VStack className="max-w-lg gap-8">
           {/* Attribution */}
           <VStack className="gap-2">
-            <Heading size="lg" className="text-typography-white">Attribution</Heading>
+            <Heading size="lg" className="text-typography-white">
+              Attribution
+            </Heading>
             <Pressable onPress={() => Linking.openURL('https://rawg.io')}>
-              <Text className="text-typography-gray text-sm">
+              <Text className="text-sm text-typography-gray">
                 Game data provided by{' '}
-                <Text style={{ color: Colors.tint }} className="text-sm">RAWG</Text>
-                {' '}&mdash; The largest video game database.
+                <Text style={{ color: Colors.tint }} className="text-sm">
+                  RAWG
+                </Text>{' '}
+                &mdash; The largest video game database.
               </Text>
             </Pressable>
           </VStack>
 
           {/* Accent Color */}
           <VStack className="gap-2">
-            <Heading size="lg" className="text-typography-white">Accent Color</Heading>
+            <Heading size="lg" className="text-typography-white">
+              Accent Color
+            </Heading>
             <HStack className="flex-wrap gap-2">
               {accentOptions.map((opt) => {
                 const isActive = accentOverride === opt.color;
@@ -1173,7 +1344,7 @@ export default function SettingsScreen() {
                   <Pressable
                     key={opt.label}
                     onPress={() => setAccentOverride(opt.color)}
-                    className="px-3 py-2 rounded-lg"
+                    className="rounded-lg px-3 py-2"
                     style={{
                       backgroundColor: isActive
                         ? (opt.color ?? Colors.tint)
@@ -1182,7 +1353,9 @@ export default function SettingsScreen() {
                       borderColor: Colors.text,
                     }}
                   >
-                    <Text className={`text-xs font-bold ${isActive ? 'text-typography-white' : 'text-typography-gray'}`}>
+                    <Text
+                      className={`text-xs font-bold ${isActive ? 'text-typography-white' : 'text-typography-gray'}`}
+                    >
                       {opt.label}
                     </Text>
                   </Pressable>
@@ -1193,22 +1366,32 @@ export default function SettingsScreen() {
 
           {/* Storage Stats */}
           <VStack className="gap-2">
-            <Heading size="lg" className="text-typography-white">Storage</Heading>
-            <Text className="text-typography-gray text-sm">Games in database: {counts.gameCount}</Text>
-            <Text className="text-typography-gray text-sm">Cached screenshots: {counts.screenshotCount}</Text>
+            <Heading size="lg" className="text-typography-white">
+              Storage
+            </Heading>
+            <Text className="text-sm text-typography-gray">
+              Games in database: {counts.gameCount}
+            </Text>
+            <Text className="text-sm text-typography-gray">
+              Cached screenshots: {counts.screenshotCount}
+            </Text>
             <Pressable
               onPress={() => clearCache.mutate()}
-              className="mt-2 px-4 py-2 rounded self-start"
+              className="mt-2 self-start rounded px-4 py-2"
               style={{ backgroundColor: '#b91c1c' }}
             >
-              <Text className="text-typography-white text-sm font-bold">Clear Cache &amp; Re-enrich</Text>
+              <Text className="text-sm font-bold text-typography-white">
+                Clear Cache &amp; Re-enrich
+              </Text>
             </Pressable>
           </VStack>
 
           {/* App Info */}
           <VStack className="gap-1">
-            <Heading size="lg" className="text-typography-white">About</Heading>
-            <Text className="text-typography-gray text-sm">
+            <Heading size="lg" className="text-typography-white">
+              About
+            </Heading>
+            <Text className="text-sm text-typography-gray">
               Retro Backlog v{Constants.expoConfig?.version ?? '1.0.0'}
             </Text>
           </VStack>
@@ -1231,6 +1414,7 @@ git commit -m "refactor: convert settings screen to TanStack Query"
 ### Task 10: Clean up Zustand store — remove server state
 
 **Files:**
+
 - Modify: `stores/ui.ts`
 
 **Step 1: Remove searchResults and loading from store**
@@ -1240,9 +1424,18 @@ Replace the full contents of `stores/ui.ts` with:
 ```ts
 import { create } from 'zustand';
 
-export type BacklogStatus = 'none' | 'want_to_play' | 'playing' | 'completed' | 'dropped';
+export type BacklogStatus =
+  | 'none'
+  | 'want_to_play'
+  | 'playing'
+  | 'completed'
+  | 'dropped';
 
-export const BACKLOG_STATUSES: { value: BacklogStatus; label: string; shortLabel: string }[] = [
+export const BACKLOG_STATUSES: {
+  value: BacklogStatus;
+  label: string;
+  shortLabel: string;
+}[] = [
   { value: 'want_to_play', label: 'Want to Play', shortLabel: 'Wishlist' },
   { value: 'playing', label: 'Playing', shortLabel: 'Playing' },
   { value: 'completed', label: 'Completed', shortLabel: 'Done' },
@@ -1290,7 +1483,8 @@ export const useUIStore = create<UIState>()((set) => ({
   backlogStatusFilter: null,
   setBacklogStatusFilter: (status) => set({ backlogStatusFilter: status }),
   backlogPlatformFilter: null,
-  setBacklogPlatformFilter: (platform) => set({ backlogPlatformFilter: platform }),
+  setBacklogPlatformFilter: (platform) =>
+    set({ backlogPlatformFilter: platform }),
 
   // Accent
   accentOverride: null,
@@ -1324,6 +1518,7 @@ Expected: No errors
 Run: `pnpm start` → open on Android emulator (emulator-5554)
 
 Test checklist:
+
 - [ ] Home screen loads games for selected platform
 - [ ] Switching platforms updates game grid
 - [ ] Browse screen: search returns results

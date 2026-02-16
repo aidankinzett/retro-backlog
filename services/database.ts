@@ -48,7 +48,6 @@ const migrations: Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_games_rawg_slug ON games(rawg_slug);
       CREATE INDEX IF NOT EXISTS idx_screenshots_game ON screenshots(game_id);
     `);
-
   },
   // Future migrations go here as new array entries
 ];
@@ -63,11 +62,15 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const currentVersion = result?.user_version ?? 0;
 
   if (currentVersion >= migrations.length) {
-    console.log(`[DB] Already at version ${currentVersion}, no migration needed`);
+    console.log(
+      `[DB] Already at version ${currentVersion}, no migration needed`,
+    );
     return;
   }
 
-  console.log(`[DB] Migrating from version ${currentVersion} to ${migrations.length}...`);
+  console.log(
+    `[DB] Migrating from version ${currentVersion} to ${migrations.length}...`,
+  );
   for (let i = currentVersion; i < migrations.length; i++) {
     console.log(`[DB] Running migration ${i + 1}...`);
     await migrations[i](db);
@@ -115,29 +118,40 @@ export interface Screenshot {
 export async function getGamesByPlatform(
   db: SQLiteDatabase,
   platform: string,
-  vibeFilter?: 'essential' | 'hidden_gem'
+  vibeFilter?: 'essential' | 'hidden_gem',
 ): Promise<Game[]> {
   if (vibeFilter) {
     return db.getAllAsync<Game>(
       'SELECT * FROM games WHERE platform = ? AND curated_vibe = ? ORDER BY metacritic DESC, title ASC',
-      [platform, vibeFilter]
+      [platform, vibeFilter],
     );
   }
   return db.getAllAsync<Game>(
     'SELECT * FROM games WHERE platform = ? ORDER BY metacritic DESC, title ASC',
-    [platform]
+    [platform],
   );
 }
 
-export async function getGameById(db: SQLiteDatabase, id: string): Promise<Game | null> {
+export async function getGameById(
+  db: SQLiteDatabase,
+  id: string,
+): Promise<Game | null> {
   return db.getFirstAsync<Game>('SELECT * FROM games WHERE id = ?', [id]);
 }
 
-export async function getGameByRawgSlug(db: SQLiteDatabase, slug: string): Promise<Game | null> {
-  return db.getFirstAsync<Game>('SELECT * FROM games WHERE rawg_slug = ?', [slug]);
+export async function getGameByRawgSlug(
+  db: SQLiteDatabase,
+  slug: string,
+): Promise<Game | null> {
+  return db.getFirstAsync<Game>('SELECT * FROM games WHERE rawg_slug = ?', [
+    slug,
+  ]);
 }
 
-export async function insertGame(db: SQLiteDatabase, game: Omit<Game, 'created_at'>): Promise<void> {
+export async function insertGame(
+  db: SQLiteDatabase,
+  game: Omit<Game, 'created_at'>,
+): Promise<void> {
   await db.runAsync(
     `INSERT OR REPLACE INTO games (
       id, rawg_id, rawg_slug, title, platform, genre, curated_vibe, curated_desc,
@@ -145,35 +159,64 @@ export async function insertGame(db: SQLiteDatabase, game: Omit<Game, 'created_a
       description, playtime, esrb_rating, website, metacritic_url, backlog_status, last_enriched
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      game.id, game.rawg_id, game.rawg_slug, game.title, game.platform, game.genre,
-      game.curated_vibe, game.curated_desc, game.metacritic, game.rawg_rating,
-      game.release_date, game.background_image, game.developer, game.publisher,
-      game.description, game.playtime, game.esrb_rating, game.website,
-      game.metacritic_url, game.backlog_status, game.last_enriched,
-    ]
+      game.id,
+      game.rawg_id,
+      game.rawg_slug,
+      game.title,
+      game.platform,
+      game.genre,
+      game.curated_vibe,
+      game.curated_desc,
+      game.metacritic,
+      game.rawg_rating,
+      game.release_date,
+      game.background_image,
+      game.developer,
+      game.publisher,
+      game.description,
+      game.playtime,
+      game.esrb_rating,
+      game.website,
+      game.metacritic_url,
+      game.backlog_status,
+      game.last_enriched,
+    ],
   );
 }
 
 export async function updateBacklogStatus(
   db: SQLiteDatabase,
   gameId: string,
-  status: string
+  status: string,
 ): Promise<void> {
-  await db.runAsync('UPDATE games SET backlog_status = ? WHERE id = ?', [status, gameId]);
+  await db.runAsync('UPDATE games SET backlog_status = ? WHERE id = ?', [
+    status,
+    gameId,
+  ]);
 }
 
 export async function updateGameEnrichment(
   db: SQLiteDatabase,
   gameId: string,
-  data: Partial<Game>
+  data: Partial<Game>,
 ): Promise<void> {
   const fields: string[] = [];
   const values: (string | number | null)[] = [];
 
   const enrichableFields = [
-    'metacritic', 'rawg_rating', 'release_date', 'background_image',
-    'developer', 'publisher', 'description', 'playtime', 'esrb_rating',
-    'website', 'metacritic_url', 'rawg_id', 'genre',
+    'metacritic',
+    'rawg_rating',
+    'release_date',
+    'background_image',
+    'developer',
+    'publisher',
+    'description',
+    'playtime',
+    'esrb_rating',
+    'website',
+    'metacritic_url',
+    'rawg_id',
+    'genre',
   ] as const;
 
   for (const field of enrichableFields) {
@@ -186,12 +229,15 @@ export async function updateGameEnrichment(
   fields.push("last_enriched = datetime('now')");
   values.push(gameId);
 
-  await db.runAsync(`UPDATE games SET ${fields.join(', ')} WHERE id = ?`, values);
+  await db.runAsync(
+    `UPDATE games SET ${fields.join(', ')} WHERE id = ?`,
+    values,
+  );
 }
 
 export async function getBacklogSlugs(db: SQLiteDatabase): Promise<string[]> {
   const rows = await db.getAllAsync<{ rawg_slug: string }>(
-    "SELECT rawg_slug FROM games WHERE backlog_status != 'none' AND rawg_slug IS NOT NULL"
+    "SELECT rawg_slug FROM games WHERE backlog_status != 'none' AND rawg_slug IS NOT NULL",
   );
   return rows.map((r) => r.rawg_slug);
 }
@@ -199,7 +245,7 @@ export async function getBacklogSlugs(db: SQLiteDatabase): Promise<string[]> {
 export async function getBacklogGames(
   db: SQLiteDatabase,
   status?: string,
-  platform?: string
+  platform?: string,
 ): Promise<Game[]> {
   let query = "SELECT * FROM games WHERE backlog_status != 'none'";
   const params: string[] = [];
@@ -225,9 +271,15 @@ export async function getBacklogStats(db: SQLiteDatabase): Promise<{
   dropped: number;
 }> {
   const rows = await db.getAllAsync<{ backlog_status: string; count: number }>(
-    "SELECT backlog_status, COUNT(*) as count FROM games WHERE backlog_status != 'none' GROUP BY backlog_status"
+    "SELECT backlog_status, COUNT(*) as count FROM games WHERE backlog_status != 'none' GROUP BY backlog_status",
   );
-  const stats = { total: 0, want_to_play: 0, playing: 0, completed: 0, dropped: 0 };
+  const stats = {
+    total: 0,
+    want_to_play: 0,
+    playing: 0,
+    completed: 0,
+    dropped: 0,
+  };
   for (const row of rows) {
     const key = row.backlog_status as keyof typeof stats;
     if (key in stats) stats[key] = row.count;
@@ -236,33 +288,44 @@ export async function getBacklogStats(db: SQLiteDatabase): Promise<{
   return stats;
 }
 
-export async function getGamesNeedingEnrichment(db: SQLiteDatabase): Promise<Game[]> {
+export async function getGamesNeedingEnrichment(
+  db: SQLiteDatabase,
+): Promise<Game[]> {
   return db.getAllAsync<Game>(
     `SELECT * FROM games
      WHERE rawg_slug IS NOT NULL
      AND (last_enriched IS NULL OR datetime(last_enriched, '+7 days') < datetime('now'))
-     LIMIT 10`
+     LIMIT 10`,
   );
 }
 
 // --- Screenshot CRUD ---
 
-export async function getScreenshots(db: SQLiteDatabase, gameId: string): Promise<Screenshot[]> {
+export async function getScreenshots(
+  db: SQLiteDatabase,
+  gameId: string,
+): Promise<Screenshot[]> {
   return db.getAllAsync<Screenshot>(
     'SELECT * FROM screenshots WHERE game_id = ?',
-    [gameId]
+    [gameId],
   );
 }
 
-export async function insertScreenshots(db: SQLiteDatabase, screenshots: Screenshot[]): Promise<void> {
+export async function insertScreenshots(
+  db: SQLiteDatabase,
+  screenshots: Screenshot[],
+): Promise<void> {
   for (const s of screenshots) {
     await db.runAsync(
       'INSERT OR REPLACE INTO screenshots (id, game_id, image_url, width, height) VALUES (?, ?, ?, ?, ?)',
-      [s.id, s.game_id, s.image_url, s.width, s.height]
+      [s.id, s.game_id, s.image_url, s.width, s.height],
     );
   }
 }
 
-export async function deleteScreenshotsByGame(db: SQLiteDatabase, gameId: string): Promise<void> {
+export async function deleteScreenshotsByGame(
+  db: SQLiteDatabase,
+  gameId: string,
+): Promise<void> {
   await db.runAsync('DELETE FROM screenshots WHERE game_id = ?', [gameId]);
 }

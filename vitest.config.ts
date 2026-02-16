@@ -8,7 +8,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
     globals: true,
-    include: ['**/__tests__/**/*.{test,spec}.{ts,tsx}', '**/*.{test,spec}.{ts,tsx}'],
+    include: [
+      '**/__tests__/**/*.{test,spec}.{ts,tsx}',
+      '**/*.{test,spec}.{ts,tsx}',
+    ],
     exclude: ['node_modules', '.expo', 'android', 'ios'],
     css: false,
     testTimeout: 10000,
@@ -21,11 +24,7 @@ export default defineConfig({
         'components/**',
         'constants/**',
       ],
-      exclude: [
-        'components/ui/**',
-        '**/*.d.ts',
-        'app/**',
-      ],
+      exclude: ['components/ui/**', '**/*.d.ts', 'app/**'],
     },
   },
   resolve: {

@@ -26,9 +26,11 @@ export function BacklogButton({ game, isInBacklog }: BacklogButtonProps) {
     return (
       <Pressable
         disabled
-        className="px-2 py-1 rounded bg-background-50 self-start"
+        className="self-start rounded bg-background-50 px-2 py-1"
       >
-        <Text className="text-typography-gray text-xs font-bold">In Backlog</Text>
+        <Text className="text-xs font-bold text-typography-gray">
+          In Backlog
+        </Text>
       </Pressable>
     );
   }
@@ -37,7 +39,7 @@ export function BacklogButton({ game, isInBacklog }: BacklogButtonProps) {
     return (
       <Pressable
         disabled
-        className="px-2 py-1 rounded self-start opacity-60"
+        className="self-start rounded px-2 py-1 opacity-60"
         style={{ backgroundColor: Colors.tint }}
       >
         <ActivityIndicator size={12} color="#fff" />
@@ -48,10 +50,10 @@ export function BacklogButton({ game, isInBacklog }: BacklogButtonProps) {
   return (
     <Pressable
       onPress={handlePress}
-      className="px-2 py-1 rounded self-start"
+      className="self-start rounded px-2 py-1"
       style={{ backgroundColor: Colors.tint }}
     >
-      <Text className="text-typography-white text-xs font-bold">+ Backlog</Text>
+      <Text className="text-xs font-bold text-typography-white">+ Backlog</Text>
     </Pressable>
   );
 }

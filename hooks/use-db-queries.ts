@@ -24,7 +24,11 @@ export function useGameDetail(slug: string | undefined) {
   const db = useSQLiteContext();
   return useQuery({
     queryKey: ['game', slug],
-    queryFn: async (): Promise<{ game: Game | null; rawgGame: RawgGame | null; source: 'db' | 'rawg' }> => {
+    queryFn: async (): Promise<{
+      game: Game | null;
+      rawgGame: RawgGame | null;
+      source: 'db' | 'rawg';
+    }> => {
       // Try local DB first
       const dbGame = await getGameByRawgSlug(db, slug!);
       if (dbGame) {
@@ -49,7 +53,10 @@ export function useGameScreenshots(gameId: string | undefined) {
   });
 }
 
-export function useBacklogGames(statusFilter?: string, platformFilter?: string) {
+export function useBacklogGames(
+  statusFilter?: string,
+  platformFilter?: string,
+) {
   const db = useSQLiteContext();
   return useQuery({
     queryKey: ['backlog', statusFilter ?? null, platformFilter ?? null],
@@ -84,8 +91,12 @@ export function useSettingsCounts() {
   return useQuery({
     queryKey: ['settings', 'counts'],
     queryFn: async () => {
-      const games = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM games');
-      const screenshots = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM screenshots');
+      const games = await db.getFirstAsync<{ count: number }>(
+        'SELECT COUNT(*) as count FROM games',
+      );
+      const screenshots = await db.getFirstAsync<{ count: number }>(
+        'SELECT COUNT(*) as count FROM screenshots',
+      );
       return {
         gameCount: games?.count ?? 0,
         screenshotCount: screenshots?.count ?? 0,
@@ -102,7 +113,13 @@ export function useAddToBacklog() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ rawgGame, status = 'want_to_play' }: { rawgGame: RawgGame; status?: BacklogStatus }) => {
+    mutationFn: async ({
+      rawgGame,
+      status = 'want_to_play',
+    }: {
+      rawgGame: RawgGame;
+      status?: BacklogStatus;
+    }) => {
       const existing = await getGameByRawgSlug(db, rawgGame.slug);
       if (existing) {
         await updateBacklogStatus(db, existing.id, status);
@@ -111,7 +128,7 @@ export function useAddToBacklog() {
 
       const gameId = randomUUID();
       const platformEntry = PLATFORMS.find((p) =>
-        rawgGame.platforms?.some((rp) => rp.platform.id === p.rawgId)
+        rawgGame.platforms?.some((rp) => rp.platform.id === p.rawgId),
       );
       await insertGame(db, {
         id: gameId,
@@ -141,7 +158,7 @@ export function useAddToBacklog() {
       const game = await getGameById(db, gameId);
       if (game && !game.last_enriched) {
         enrichGame(db, game).catch((err) =>
-          console.error(`Enrichment failed for ${game.title}:`, err)
+          console.error(`Enrichment failed for ${game.title}:`, err),
         );
       }
 
@@ -162,7 +179,15 @@ export function useUpdateBacklogStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ gameId, slug, status }: { gameId: string; slug: string | null; status: BacklogStatus }) => {
+    mutationFn: async ({
+      gameId,
+      slug,
+      status,
+    }: {
+      gameId: string;
+      slug: string | null;
+      status: BacklogStatus;
+    }) => {
       await updateBacklogStatus(db, gameId, status);
     },
     onSuccess: (_data, { slug }) => {
@@ -181,8 +206,8 @@ export function useClearCache() {
 
   return useMutation({
     mutationFn: async () => {
-      await db.execAsync("UPDATE games SET last_enriched = NULL");
-      await db.execAsync("DELETE FROM screenshots");
+      await db.execAsync('UPDATE games SET last_enriched = NULL');
+      await db.execAsync('DELETE FROM screenshots');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings', 'counts'] });
@@ -197,12 +222,11 @@ export function useClearDatabase() {
 
   return useMutation({
     mutationFn: async () => {
-      await db.execAsync("DELETE FROM screenshots");
-      await db.execAsync("DELETE FROM games");
+      await db.execAsync('DELETE FROM screenshots');
+      await db.execAsync('DELETE FROM games');
     },
     onSuccess: () => {
       queryClient.invalidateQueries();
     },
   });
 }
-

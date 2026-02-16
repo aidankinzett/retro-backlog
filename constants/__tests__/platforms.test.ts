@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { PLATFORMS, PLATFORM_MAP, getPlatformAccent } from '@/constants/platforms';
+import {
+  PLATFORMS,
+  PLATFORM_MAP,
+  getPlatformAccent,
+} from '@/constants/platforms';
 
 describe('platforms', () => {
   it('has 10 platforms defined', () => {

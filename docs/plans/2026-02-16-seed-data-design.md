@@ -13,11 +13,13 @@
 ### Task 1: Create seed data file
 
 **Files:**
+
 - Create: `services/seed-data.ts`
 
 **Step 1: Create `services/seed-data.ts` with the embedded game array and seed function**
 
 The file exports:
+
 1. `SEED_GAMES` — a typed array of 112 game objects from the CSV
 2. `seedGames(db)` — inserts each game, skipping duplicates by `rawg_slug + platform`
 
@@ -36,7 +38,15 @@ interface SeedGame {
 
 const SEED_GAMES: SeedGame[] = [
   // All 112 entries from seed_games.csv, e.g.:
-  { title: "Final Fantasy X", platform: "ps2", genre: "JRPG", curated_vibe: "essential", rawg_slug: "final-fantasy-x", curated_desc: "One of the most beloved JRPGs ever. Incredible story, memorable characters, and deep turn-based combat." },
+  {
+    title: 'Final Fantasy X',
+    platform: 'ps2',
+    genre: 'JRPG',
+    curated_vibe: 'essential',
+    rawg_slug: 'final-fantasy-x',
+    curated_desc:
+      'One of the most beloved JRPGs ever. Incredible story, memorable characters, and deep turn-based combat.',
+  },
   // ... all other entries
 ];
 
@@ -44,14 +54,22 @@ export async function seedGames(db: SQLiteDatabase): Promise<void> {
   for (const game of SEED_GAMES) {
     const existing = await db.getFirstAsync<{ id: string }>(
       'SELECT id FROM games WHERE rawg_slug = ? AND platform = ?',
-      [game.rawg_slug, game.platform]
+      [game.rawg_slug, game.platform],
     );
     if (existing) continue;
 
     await db.runAsync(
       `INSERT INTO games (id, title, platform, genre, curated_vibe, curated_desc, rawg_slug, backlog_status)
        VALUES (?, ?, ?, ?, ?, ?, ?, 'none')`,
-      [randomUUID(), game.title, game.platform, game.genre, game.curated_vibe, game.curated_desc, game.rawg_slug]
+      [
+        randomUUID(),
+        game.title,
+        game.platform,
+        game.genre,
+        game.curated_vibe,
+        game.curated_desc,
+        game.rawg_slug,
+      ],
     );
   }
 }
@@ -74,6 +92,7 @@ git commit -m "feat: add embedded seed data for 112 curated retro games"
 ### Task 2: Refactor migration system and wire in seed
 
 **Files:**
+
 - Modify: `services/database.ts`
 
 **Step 1: Refactor `migrateDbIfNeeded` to use a sequential migration runner**
@@ -139,7 +158,9 @@ const migrations: Migration[] = [
 ];
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  const result = await db.getFirstAsync<{ user_version: number }>(
+    'PRAGMA user_version',
+  );
   let currentVersion = result?.user_version ?? 0;
 
   if (currentVersion >= migrations.length) return;

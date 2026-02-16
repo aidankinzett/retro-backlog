@@ -41,7 +41,7 @@ export function BacklogStatusSheet({
           <ActionsheetDragIndicator />
         </ActionsheetDragIndicatorWrapper>
         <Box className="w-full pb-2">
-          <Text className="text-typography-white font-bold text-base px-3">
+          <Text className="px-3 text-base font-bold text-typography-white">
             Set Status
           </Text>
         </Box>
@@ -56,7 +56,7 @@ export function BacklogStatusSheet({
               <ActionsheetItemText
                 className={
                   isActive
-                    ? 'text-typography-white font-bold'
+                    ? 'font-bold text-typography-white'
                     : 'text-typography-white'
                 }
               >
@@ -67,9 +67,9 @@ export function BacklogStatusSheet({
         })}
         {showRemove && currentStatus !== 'none' && (
           <>
-            <Box className="w-full h-px bg-background-100 my-1" />
+            <Box className="my-1 h-px w-full bg-background-100" />
             <ActionsheetItem onPress={() => handleSelect('none')}>
-              <ActionsheetItemText className="text-red-400 font-bold">
+              <ActionsheetItemText className="font-bold text-red-400">
                 Remove from Backlog
               </ActionsheetItemText>
             </ActionsheetItem>

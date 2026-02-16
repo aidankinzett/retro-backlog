@@ -50,7 +50,9 @@ vi.mock('expo-router', () => ({
 }));
 
 vi.mock('expo-crypto', () => ({
-  randomUUID: vi.fn(() => 'test-uuid-' + Math.random().toString(36).substr(2, 9)),
+  randomUUID: vi.fn(
+    () => 'test-uuid-' + Math.random().toString(36).substr(2, 9),
+  ),
 }));
 
 vi.mock('expo-image', () => {
@@ -71,7 +73,11 @@ vi.mock('expo-haptics', () => ({
   notificationAsync: vi.fn(),
   selectionAsync: vi.fn(),
   ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
-  NotificationFeedbackType: { Success: 'success', Warning: 'warning', Error: 'error' },
+  NotificationFeedbackType: {
+    Success: 'success',
+    Warning: 'warning',
+    Error: 'error',
+  },
 }));
 
 vi.mock('expo-constants', () => ({
@@ -125,7 +131,12 @@ vi.mock('react-native-reanimated', () => ({
 }));
 
 vi.mock('react-native-gesture-handler', () => {
-  const { View, TouchableOpacity, ScrollView, FlatList } = require('react-native-web');
+  const {
+    View,
+    TouchableOpacity,
+    ScrollView,
+    FlatList,
+  } = require('react-native-web');
   return {
     GestureHandlerRootView: View,
     Swipeable: View,

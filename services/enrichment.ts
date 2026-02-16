@@ -25,7 +25,10 @@ function normalizeTitle(title: string): string {
  * Enrich a single game with full RAWG details and screenshots.
  * Call this after inserting a game from Browse.
  */
-export async function enrichGame(db: SQLiteDatabase, game: Game): Promise<void> {
+export async function enrichGame(
+  db: SQLiteDatabase,
+  game: Game,
+): Promise<void> {
   const slug = game.rawg_slug || (game.rawg_id ? String(game.rawg_id) : null);
   if (!slug) return;
 
@@ -44,19 +47,23 @@ export async function enrichGame(db: SQLiteDatabase, game: Game): Promise<void> 
       const normalizedTarget = normalizeTitle(game.title);
       const bestMatch = searchRes.results.find((result) => {
         const normalizedResult = normalizeTitle(result.name);
-        return normalizedResult.includes(normalizedTarget) || normalizedTarget.includes(normalizedResult);
+        return (
+          normalizedResult.includes(normalizedTarget) ||
+          normalizedTarget.includes(normalizedResult)
+        );
       });
 
       if (bestMatch) {
         details = bestMatch;
         // Update the stored slug and rawg_id to fix future lookups
-        await db.runAsync('UPDATE games SET rawg_slug = ?, rawg_id = ? WHERE id = ?', [
-          details.slug,
-          details.id,
-          game.id,
-        ]);
+        await db.runAsync(
+          'UPDATE games SET rawg_slug = ?, rawg_id = ? WHERE id = ?',
+          [details.slug, details.id, game.id],
+        );
       } else {
-        console.warn(`Enrichment: No confident match found for "${game.title}"`);
+        console.warn(
+          `Enrichment: No confident match found for "${game.title}"`,
+        );
         return; // Skip update if no match found
       }
     } else {
@@ -91,7 +98,7 @@ export async function enrichGame(db: SQLiteDatabase, game: Game): Promise<void> 
         image_url: s.image,
         width: s.width,
         height: s.height,
-      }))
+      })),
     );
   }
 }

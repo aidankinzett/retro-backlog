@@ -14,7 +14,7 @@ export function GameCard({ game, onPress }: GameCardProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="rounded-lg overflow-hidden"
+      className="overflow-hidden rounded-lg"
       style={{ backgroundColor: '#1a1a2e' }}
     >
       <Image
@@ -24,13 +24,16 @@ export function GameCard({ game, onPress }: GameCardProps) {
         placeholder={{ blurhash: 'L6Pj0^i_.AyE_3t7t7R**0o#DgR4' }}
         transition={200}
       />
-      <Box className="p-2 gap-1">
-        <Text className="text-typography-white text-sm font-bold" numberOfLines={1}>
+      <Box className="gap-1 p-2">
+        <Text
+          className="text-sm font-bold text-typography-white"
+          numberOfLines={1}
+        >
           {game.title}
         </Text>
         <Box className="flex-row items-center justify-between">
           {game.genre ? (
-            <Text className="text-typography-gray text-xs" numberOfLines={1}>
+            <Text className="text-xs text-typography-gray" numberOfLines={1}>
               {game.genre}
             </Text>
           ) : (

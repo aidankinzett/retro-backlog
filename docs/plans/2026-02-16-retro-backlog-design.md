@@ -6,14 +6,14 @@ Cross-platform React Native Expo app for browsing and tracking retro games using
 
 ## Key Decisions
 
-| Area | Decision | Rationale |
-|------|----------|-----------|
-| Gamepad input | `react-native-earl-gamepad` | Unified WebView-based API for all gamepad input (built-in + Bluetooth) |
-| Navigation | `@react-navigation/drawer` via Expo Router, toggleable | Pinned in landscape, collapsible in portrait. Supports both orientations. |
-| Orientation | Responsive, landscape-primary | Landscape is optimized layout (4-col grids, pinned sidebar). Portrait adapts (2-col, collapsed drawer). |
-| Accent colors | Dynamic per-system with user override | Auto-changes when browsing platforms (PS blue, Nintendo red, etc.). User can pin a color in settings. |
-| Theme | Dark only | Optimized for handheld gaming sessions |
-| Data | SQLite only, no sync | Simple local storage. Sync can be added later. |
+| Area          | Decision                                               | Rationale                                                                                               |
+| ------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Gamepad input | `react-native-earl-gamepad`                            | Unified WebView-based API for all gamepad input (built-in + Bluetooth)                                  |
+| Navigation    | `@react-navigation/drawer` via Expo Router, toggleable | Pinned in landscape, collapsible in portrait. Supports both orientations.                               |
+| Orientation   | Responsive, landscape-primary                          | Landscape is optimized layout (4-col grids, pinned sidebar). Portrait adapts (2-col, collapsed drawer). |
+| Accent colors | Dynamic per-system with user override                  | Auto-changes when browsing platforms (PS blue, Nintendo red, etc.). User can pin a color in settings.   |
+| Theme         | Dark only                                              | Optimized for handheld gaming sessions                                                                  |
+| Data          | SQLite only, no sync                                   | Simple local storage. Sync can be added later.                                                          |
 
 ## Architecture
 
@@ -58,6 +58,7 @@ Built on `react-native-earl-gamepad` with a custom focus management layer:
 **Tables:**
 
 `games` — stores both curated and user-added games:
+
 ```sql
 id              TEXT PRIMARY KEY
 rawg_id         INTEGER
@@ -80,6 +81,7 @@ created_at      TEXT DEFAULT (datetime('now'))
 ```
 
 `screenshots`:
+
 ```sql
 id              TEXT PRIMARY KEY
 game_id         TEXT NOT NULL
@@ -97,6 +99,7 @@ height          INTEGER
 ### State Management
 
 **Zustand** for transient UI state only (SQLite is source of truth):
+
 - `currentSystemId` — active system filter on home screen (also drives accent color)
 - `searchQuery` / `searchResults` — browse screen
 - `backlogFilter` / `backlogSort` — backlog screen state
@@ -126,6 +129,7 @@ height          INTEGER
 ## Screens
 
 ### Home (Curated Picks)
+
 - Horizontal system selector at top. L1/R1 cycle systems.
 - Two sections per system: "Must Play" and "Hidden Gems".
 - 3-4 column card grid: cover image, title, Metacritic badge, genre tag.
@@ -133,6 +137,7 @@ height          INTEGER
 - Loads from SQLite. Empty state until seed data added.
 
 ### Browse
+
 - Search bar with 300ms debounce.
 - Platform filter chips, sort options (Metacritic, rating, release date, name).
 - Optional Metacritic range filter.
@@ -141,6 +146,7 @@ height          INTEGER
 - Supports browsing top-rated per platform without a search query.
 
 ### Backlog
+
 - Status categories: Want to Play, Playing, Completed, Dropped.
 - Quick status switching (single button press to cycle or popup menu).
 - Stats at top: total, completed, by-platform breakdown.
@@ -148,13 +154,16 @@ height          INTEGER
 - D-pad navigation, face buttons change status or open details.
 
 ### Game Detail
+
 Two-panel landscape layout:
+
 - **Left**: Cover image, title, year, developer/publisher, Metacritic (large, color-coded), RAWG rating, genre tags, platform tags, ESRB, external links.
 - **Right**: Screenshot gallery (horizontal scroll, D-pad navigable), description (plain text), playtime estimate.
 - Backlog status button.
 - B button goes back.
 
 ### Settings
+
 - "Powered by RAWG" attribution with link.
 - App version.
 - Clear cache / re-fetch enrichment.

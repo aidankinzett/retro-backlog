@@ -14,7 +14,12 @@ import { BacklogStatusSheet } from '@/components/backlog-status-sheet';
 import { useOrientation } from '@/hooks/use-orientation';
 import { Colors } from '@/constants/theme';
 import { PLATFORM_MAP, PLATFORMS } from '@/constants/platforms';
-import { useGameDetail, useGameScreenshots, useUpdateBacklogStatus, useAddToBacklog } from '@/hooks/use-db-queries';
+import {
+  useGameDetail,
+  useGameScreenshots,
+  useUpdateBacklogStatus,
+  useAddToBacklog,
+} from '@/hooks/use-db-queries';
 import { BACKLOG_STATUSES, type BacklogStatus } from '@/stores/ui';
 
 export default function GameDetailScreen() {
@@ -46,12 +51,14 @@ export default function GameDetailScreen() {
   const curatedDesc = game?.curated_desc;
   const backlogStatus = game?.backlog_status ?? 'none';
 
-  const platformId = game?.platform ?? (() => {
-    const entry = PLATFORMS.find((p) =>
-      rawgGame?.platforms?.some((rp) => rp.platform.id === p.rawgId)
-    );
-    return entry?.id;
-  })();
+  const platformId =
+    game?.platform ??
+    (() => {
+      const entry = PLATFORMS.find((p) =>
+        rawgGame?.platforms?.some((rp) => rp.platform.id === p.rawgId),
+      );
+      return entry?.id;
+    })();
   const platform = platformId ? PLATFORM_MAP[platformId] : undefined;
 
   // Screenshots from DB (only available for games in the database)
@@ -61,7 +68,10 @@ export default function GameDetailScreen() {
     if (game) {
       updateStatus.mutate({ gameId: game.id, slug: game.rawg_slug, status });
     } else if (rawgGame) {
-      addToBacklog.mutate({ rawgGame, status: status === 'none' ? 'want_to_play' : status });
+      addToBacklog.mutate({
+        rawgGame,
+        status: status === 'none' ? 'want_to_play' : status,
+      });
     }
   };
 
@@ -77,8 +87,13 @@ export default function GameDetailScreen() {
     return (
       <Box className="flex-1 items-center justify-center bg-background-dark">
         <Text className="text-typography-gray">Game not found</Text>
-        <Pressable onPress={() => router.back()} className="mt-4 px-4 py-2 rounded-lg bg-background-50">
-          <Text style={{ color: Colors.tint }} className="font-bold">← Go Back</Text>
+        <Pressable
+          onPress={() => router.back()}
+          className="mt-4 rounded-lg bg-background-50 px-4 py-2"
+        >
+          <Text style={{ color: Colors.tint }} className="font-bold">
+            ← Go Back
+          </Text>
         </Pressable>
       </Box>
     );
@@ -99,14 +114,18 @@ export default function GameDetailScreen() {
           transition={200}
         />
       )}
-      <Heading size="lg" className="text-typography-white">{title}</Heading>
+      <Heading size="lg" className="text-typography-white">
+        {title}
+      </Heading>
 
       <HStack className="items-center gap-3">
         <MetacriticBadge score={metacritic} size="lg" />
         {rawgRating != null && (
           <VStack>
-            <Text className="text-typography-gray text-xs">RAWG</Text>
-            <Text className="text-typography-white font-bold">{rawgRating.toFixed(1)}</Text>
+            <Text className="text-xs text-typography-gray">RAWG</Text>
+            <Text className="font-bold text-typography-white">
+              {rawgRating.toFixed(1)}
+            </Text>
           </VStack>
         )}
       </HStack>
@@ -122,39 +141,46 @@ export default function GameDetailScreen() {
       )}
       {platform && (
         <Box
-          className="self-start px-3 py-1 rounded-full"
+          className="self-start rounded-full px-3 py-1"
           style={{ backgroundColor: platform.accent }}
         >
-          <Text className="text-typography-white text-xs font-bold">{platform.name}</Text>
+          <Text className="text-xs font-bold text-typography-white">
+            {platform.name}
+          </Text>
         </Box>
       )}
       {genre ? (
         <HStack className="flex-wrap gap-2">
           {genre.split(',').map((g) => (
-            <Box key={g.trim()} className="px-2 py-1 rounded bg-background-50">
-              <Text className="text-typography-gray text-xs">{g.trim()}</Text>
+            <Box key={g.trim()} className="rounded bg-background-50 px-2 py-1">
+              <Text className="text-xs text-typography-gray">{g.trim()}</Text>
             </Box>
           ))}
         </HStack>
       ) : null}
       {esrbRating && (
-        <Text className="text-typography-gray text-xs">ESRB: {esrbRating}</Text>
+        <Text className="text-xs text-typography-gray">ESRB: {esrbRating}</Text>
       )}
 
       {/* Backlog status */}
-      <VStack className="gap-2 mt-2">
-        <Text className="text-typography-gray text-sm font-bold">Backlog Status</Text>
+      <VStack className="mt-2 gap-2">
+        <Text className="text-sm font-bold text-typography-gray">
+          Backlog Status
+        </Text>
         <Pressable
           onPress={() => setShowStatusSheet(true)}
-          className="self-start px-4 py-2 rounded-lg bg-background-50 flex-row items-center gap-2"
+          className="flex-row items-center gap-2 self-start rounded-lg bg-background-50 px-4 py-2"
         >
           <Text
-            style={backlogStatus !== 'none' ? { color: Colors.tint } : undefined}
+            style={
+              backlogStatus !== 'none' ? { color: Colors.tint } : undefined
+            }
             className="text-sm font-bold text-typography-gray"
           >
-            {BACKLOG_STATUSES.find((s) => s.value === backlogStatus)?.label ?? 'Add to Backlog'}
+            {BACKLOG_STATUSES.find((s) => s.value === backlogStatus)?.label ??
+              'Add to Backlog'}
           </Text>
-          <Text className="text-typography-gray text-xs">▼</Text>
+          <Text className="text-xs text-typography-gray">▼</Text>
         </Pressable>
       </VStack>
     </VStack>
@@ -164,29 +190,36 @@ export default function GameDetailScreen() {
     <VStack className={`gap-3 ${isLandscape ? 'flex-1' : ''} p-4`}>
       {description && (
         <VStack className="gap-2">
-          <Text className="text-typography-gray text-sm font-bold">About</Text>
-          <Text className="text-typography-white text-sm leading-relaxed" numberOfLines={isLandscape ? 8 : undefined}>
+          <Text className="text-sm font-bold text-typography-gray">About</Text>
+          <Text
+            className="text-sm leading-relaxed text-typography-white"
+            numberOfLines={isLandscape ? 8 : undefined}
+          >
             {description}
           </Text>
         </VStack>
       )}
 
       {playtime != null && playtime > 0 && (
-        <Text className="text-typography-gray text-sm">
+        <Text className="text-sm text-typography-gray">
           Average playtime: {playtime} hours
         </Text>
       )}
 
       {curatedDesc && (
-        <Box className="p-3 rounded-lg bg-background-50 border border-outline-100">
-          <Text className="text-typography-gray text-xs font-bold mb-1">Why this game?</Text>
-          <Text className="text-typography-white text-sm">{curatedDesc}</Text>
+        <Box className="rounded-lg border border-outline-100 bg-background-50 p-3">
+          <Text className="mb-1 text-xs font-bold text-typography-gray">
+            Why this game?
+          </Text>
+          <Text className="text-sm text-typography-white">{curatedDesc}</Text>
         </Box>
       )}
 
       {screenshots.length > 0 && (
         <VStack className="gap-2">
-          <Text className="text-typography-gray text-sm font-bold">Screenshots</Text>
+          <Text className="text-sm font-bold text-typography-gray">
+            Screenshots
+          </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <HStack className="gap-2">
               {screenshots.map((s) => (
@@ -208,12 +241,17 @@ export default function GameDetailScreen() {
   return (
     <Box className="flex-1 bg-background-dark">
       {/* Back button */}
-      <Box className="px-4 pb-1" style={{ paddingTop: Math.max(insets.top, 12) }}>
+      <Box
+        className="px-4 pb-1"
+        style={{ paddingTop: Math.max(insets.top, 12) }}
+      >
         <Pressable
           onPress={() => router.back()}
-          className="self-start px-3 py-2 rounded-lg bg-background-50"
+          className="self-start rounded-lg bg-background-50 px-3 py-2"
         >
-          <Text style={{ color: Colors.tint }} className="text-base font-bold">← Back</Text>
+          <Text style={{ color: Colors.tint }} className="text-base font-bold">
+            ← Back
+          </Text>
         </Pressable>
       </Box>
 

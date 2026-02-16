@@ -4,7 +4,11 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SQLiteProvider } from 'expo-sqlite';
 import { View, AppState } from 'react-native';
-import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  focusManager,
+} from '@tanstack/react-query';
 import 'react-native-reanimated';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
@@ -34,7 +38,10 @@ export default function RootLayout() {
     <View style={{ flex: 1, backgroundColor: Colors.background }}>
       <GluestackUIProvider mode="dark">
         <ThemeProvider value={DarkTheme}>
-          <SQLiteProvider databaseName="retro-backlog.db" onInit={migrateDbIfNeeded}>
+          <SQLiteProvider
+            databaseName="retro-backlog.db"
+            onInit={migrateDbIfNeeded}
+          >
             <QueryClientProvider client={queryClient}>
               <GamepadProvider>
                 <Stack
@@ -42,7 +49,10 @@ export default function RootLayout() {
                     contentStyle: { backgroundColor: Colors.background },
                   }}
                 >
-                  <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(drawer)"
+                    options={{ headerShown: false }}
+                  />
                   <Stack.Screen
                     name="game/[id]"
                     options={{
