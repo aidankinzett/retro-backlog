@@ -3,9 +3,10 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 const DATABASE_VERSION = 1;
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
-  const { user_version: currentVersion } = await db.getFirstAsync<{
+  const result = await db.getFirstAsync<{
     user_version: number;
   }>('PRAGMA user_version');
+  const currentVersion = result?.user_version ?? 0;
 
   if (currentVersion >= DATABASE_VERSION) return;
 
@@ -149,7 +150,7 @@ export async function updateGameEnrichment(
   data: Partial<Game>
 ): Promise<void> {
   const fields: string[] = [];
-  const values: unknown[] = [];
+  const values: (string | number | null)[] = [];
 
   const enrichableFields = [
     'metacritic', 'rawg_rating', 'release_date', 'background_image',
