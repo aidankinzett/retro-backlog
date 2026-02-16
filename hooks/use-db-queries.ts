@@ -187,3 +187,18 @@ export function useClearCache() {
   });
 }
 
+export function useClearDatabase() {
+  const db = useSQLiteContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await db.execAsync("DELETE FROM screenshots");
+      await db.execAsync("DELETE FROM games");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+}
+

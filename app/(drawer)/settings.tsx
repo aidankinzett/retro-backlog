@@ -9,7 +9,7 @@ import { Pressable } from '@/components/ui/pressable';
 import { Colors } from '@/constants/theme';
 import { PLATFORMS } from '@/constants/platforms';
 import { useUIStore } from '@/stores/ui';
-import { useSettingsCounts, useClearCache } from '@/hooks/use-db-queries';
+import { useSettingsCounts, useClearCache, useClearDatabase } from '@/hooks/use-db-queries';
 
 export default function SettingsScreen() {
   const accentOverride = useUIStore((s) => s.accentOverride);
@@ -17,6 +17,7 @@ export default function SettingsScreen() {
 
   const { data: counts = { gameCount: 0, screenshotCount: 0 } } = useSettingsCounts();
   const clearCache = useClearCache();
+  const clearDb = useClearDatabase();
 
   const accentOptions = [
     { label: 'Dynamic (per system)', color: null },
@@ -73,13 +74,22 @@ export default function SettingsScreen() {
             <Text className="text-typography-gray text-sm">Games in database: {counts.gameCount}</Text>
             <Text className="text-typography-gray text-sm">Cached screenshots: {counts.screenshotCount}</Text>
             
-            <Pressable
-              onPress={() => clearCache.mutate()}
-              className="px-4 py-2 rounded mt-2"
-              style={{ backgroundColor: '#b91c1c' }}
-            >
-              <Text className="text-typography-white text-sm font-bold">Clear Cache</Text>
-            </Pressable>
+            <HStack className="gap-2 mt-2">
+              <Pressable
+                onPress={() => clearCache.mutate()}
+                className="px-4 py-2 rounded"
+                style={{ backgroundColor: '#b91c1c' }}
+              >
+                <Text className="text-typography-white text-sm font-bold">Clear Cache</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => clearDb.mutate()}
+                className="px-4 py-2 rounded"
+                style={{ backgroundColor: '#b91c1c' }}
+              >
+                <Text className="text-typography-white text-sm font-bold">Clear Database</Text>
+              </Pressable>
+            </HStack>
           </VStack>
 
           {/* App Info */}
