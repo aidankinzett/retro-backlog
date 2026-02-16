@@ -1,3 +1,5 @@
+import { PLATFORMS } from '@/constants/platforms';
+
 const RAWG_BASE_URL = 'https://api.rawg.io/api';
 const DEFAULT_PROXY_URL = 'https://ghexjephfeibvsfmttoz.supabase.co/functions/v1/rawg-proxy';
 
@@ -144,6 +146,22 @@ export async function getGameScreenshots(
   gameId: number
 ): Promise<RawgPaginatedResponse<RawgScreenshot>> {
   const url = buildUrl(`/games/${gameId}/screenshots`);
+  const res = await fetch(url);
+  if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);
+  return res.json();
+}
+
+export async function getTopRetroGames(
+  options: { page_size?: number; page?: number } = {}
+): Promise<RawgPaginatedResponse<RawgGame>> {
+  const allPlatformIds = PLATFORMS.map((p) => p.rawgId).join(',');
+  const url = buildUrl('/games', {
+    platforms: allPlatformIds,
+    ordering: '-metacritic',
+    page_size: options.page_size ?? 40,
+    page: options.page,
+  });
+
   const res = await fetch(url);
   if (!res.ok) throw new RawgError(`RAWG API error: ${res.status}`, res.status);
   return res.json();

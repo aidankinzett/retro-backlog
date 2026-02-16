@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   searchGames,
   getTopGames,
+  getTopRetroGames,
   getGameDetails,
   getGameScreenshots,
 } from '@/services/rawg';
@@ -30,6 +31,13 @@ export function useRawgTopGames(
     queryKey: ['rawg', 'top', platformId, ordering],
     queryFn: () => getTopGames(platformId!, { ordering }),
     enabled: !!platformId,
+  });
+}
+
+export function useTopRetroGames() {
+  return useQuery({
+    queryKey: ['rawg', 'top-retro'],
+    queryFn: () => getTopRetroGames(),
   });
 }
 

@@ -10,10 +10,6 @@ export const BACKLOG_STATUSES: { value: BacklogStatus; label: string; shortLabel
 ];
 
 interface UIState {
-  // Home screen
-  currentSystemId: string;
-  setCurrentSystemId: (id: string) => void;
-
   // Browse screen
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -34,10 +30,6 @@ interface UIState {
 }
 
 export const useUIStore = create<UIState>()((set) => ({
-  // Home
-  currentSystemId: 'ps2',
-  setCurrentSystemId: (id) => set({ currentSystemId: id }),
-
   // Browse
   searchQuery: '',
   setSearchQuery: (query) => set({ searchQuery: query }),

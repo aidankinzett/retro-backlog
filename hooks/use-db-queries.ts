@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSQLiteContext } from 'expo-sqlite';
 import {
-  getGamesByPlatform,
   getGameByRawgSlug,
   getGameById,
   getBacklogGames,
@@ -16,15 +15,6 @@ import { getGameDetails, type RawgGame } from '@/services/rawg';
 import { PLATFORMS } from '@/constants/platforms';
 import { randomUUID } from 'expo-crypto';
 import type { BacklogStatus } from '@/stores/ui';
-
-export function useGamesByPlatform(platformId: string, vibeFilter?: 'essential' | 'hidden_gem') {
-  const db = useSQLiteContext();
-  return useQuery({
-    queryKey: ['games', 'platform', platformId, vibeFilter],
-    queryFn: () => getGamesByPlatform(db, platformId, vibeFilter),
-    networkMode: 'always',
-  });
-}
 
 /**
  * Game detail hook: DB-first, RAWG API fallback.

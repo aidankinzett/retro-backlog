@@ -4,7 +4,6 @@ import { useUIStore, BACKLOG_STATUSES } from '@/stores/ui';
 describe('useUIStore', () => {
   beforeEach(() => {
     useUIStore.setState({
-      currentSystemId: 'ps2',
       searchQuery: '',
       browsePlatformFilter: null,
       browseOrdering: '-metacritic',
@@ -16,18 +15,12 @@ describe('useUIStore', () => {
 
   it('has correct initial state', () => {
     const state = useUIStore.getState();
-    expect(state.currentSystemId).toBe('ps2');
     expect(state.searchQuery).toBe('');
     expect(state.browsePlatformFilter).toBeNull();
     expect(state.browseOrdering).toBe('-metacritic');
     expect(state.backlogStatusFilter).toBeNull();
     expect(state.backlogPlatformFilter).toBeNull();
     expect(state.accentOverride).toBeNull();
-  });
-
-  it('updates current system', () => {
-    useUIStore.getState().setCurrentSystemId('gamecube');
-    expect(useUIStore.getState().currentSystemId).toBe('gamecube');
   });
 
   it('updates search query', () => {
