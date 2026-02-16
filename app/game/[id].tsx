@@ -54,16 +54,21 @@ export default function GameDetailScreen() {
   const platform = PLATFORM_MAP[game.platform];
 
   const leftPanel = (
-    <VStack className={`gap-4 ${isLandscape ? 'flex-1' : ''} p-4`}>
+    <VStack className={`gap-2 ${isLandscape ? 'flex-1' : ''} p-4`}>
       {game.background_image && (
         <Image
           source={{ uri: game.background_image }}
-          style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: 8 }}
+          style={{
+            width: '100%',
+            height: isLandscape ? 120 : undefined,
+            aspectRatio: isLandscape ? undefined : 16 / 9,
+            borderRadius: 8,
+          }}
           contentFit="cover"
           transition={200}
         />
       )}
-      <Heading size="2xl" className="text-typography-white">{game.title}</Heading>
+      <Heading size="lg" className="text-typography-white">{game.title}</Heading>
 
       <HStack className="items-center gap-3">
         <MetacriticBadge score={game.metacritic} size="lg" />
@@ -132,7 +137,29 @@ export default function GameDetailScreen() {
   );
 
   const rightPanel = (
-    <VStack className={`gap-4 ${isLandscape ? 'flex-1' : ''} p-4`}>
+    <VStack className={`gap-3 ${isLandscape ? 'flex-1' : ''} p-4`}>
+      {game.description && (
+        <VStack className="gap-2">
+          <Text className="text-typography-gray text-sm font-bold">About</Text>
+          <Text className="text-typography-white text-sm leading-relaxed" numberOfLines={isLandscape ? 8 : undefined}>
+            {game.description}
+          </Text>
+        </VStack>
+      )}
+
+      {game.playtime != null && game.playtime > 0 && (
+        <Text className="text-typography-gray text-sm">
+          Average playtime: {game.playtime} hours
+        </Text>
+      )}
+
+      {game.curated_desc && (
+        <Box className="p-3 rounded-lg bg-background-50 border border-outline-100">
+          <Text className="text-typography-gray text-xs font-bold mb-1">Why this game?</Text>
+          <Text className="text-typography-white text-sm">{game.curated_desc}</Text>
+        </Box>
+      )}
+
       {screenshots.length > 0 && (
         <VStack className="gap-2">
           <Text className="text-typography-gray text-sm font-bold">Screenshots</Text>
@@ -151,28 +178,6 @@ export default function GameDetailScreen() {
           </ScrollView>
         </VStack>
       )}
-
-      {game.description && (
-        <VStack className="gap-2">
-          <Text className="text-typography-gray text-sm font-bold">About</Text>
-          <Text className="text-typography-white text-sm leading-relaxed">
-            {game.description}
-          </Text>
-        </VStack>
-      )}
-
-      {game.playtime != null && game.playtime > 0 && (
-        <Text className="text-typography-gray text-sm">
-          Average playtime: {game.playtime} hours
-        </Text>
-      )}
-
-      {game.curated_desc && (
-        <Box className="p-3 rounded-lg bg-background-50 border border-outline-100">
-          <Text className="text-typography-gray text-xs font-bold mb-1">Why this game?</Text>
-          <Text className="text-typography-white text-sm">{game.curated_desc}</Text>
-        </Box>
-      )}
     </VStack>
   );
 
@@ -180,8 +185,11 @@ export default function GameDetailScreen() {
     <Box className="flex-1 bg-background-dark">
       {/* Back button */}
       <Box className="px-4 pt-3 pb-1">
-        <Pressable onPress={() => router.back()}>
-          <Text className="text-primary-400 text-sm">← Back</Text>
+        <Pressable
+          onPress={() => router.back()}
+          className="self-start px-3 py-2 rounded-lg bg-background-50"
+        >
+          <Text style={{ color: Colors.tint }} className="text-base font-bold">← Back</Text>
         </Pressable>
       </Box>
 
